@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,13 @@ import 'ViewModels/LoginViewModel.dart'; // Adjust the path as per your project 
 import 'Views/LoginView.dart'; // Adjust the path for your login page
 import 'Views/Splash_Screen.dart';
 
-void main() {
+Future<void> main() async {
+  // Initialize Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => LoginViewModel(),
