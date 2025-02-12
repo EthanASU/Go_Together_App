@@ -7,26 +7,49 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
   int _currentStep = 0;
   final int totalSteps = 4;
 
-  // Fields for third step
+  // Step 1: User role
+  String? _selectedRole;
+
+  // Step 2: School selection
+  String? _selectedSchool;
+  List<String> schools = ["Thomas Gregg", "Matchbook Learning", "Kinedezi Academy", "Carl Wilde"];
+
+  // Step 3: User info
   String firstName = '';
   String lastName = '';
   String studentNumber = '';
   String emailAddress = '';
   String phoneNumber = '';
 
-  // Fields for fourth step
+  // Step 4: Passwords
   String password = '';
   String confirmPassword = '';
-
-  String? _selectedRole;
-  String? _selectedSchool;
-  List<String> schools = ["Thomas Gregg", "Matchbook Learning", "Kinedezi Academy", "Carl Wilde"];
 
   int get currentStep => _currentStep;
   String? get selectedRole => _selectedRole;
   String? get selectedSchool => _selectedSchool;
   // Check if password match
   bool get passwordsMatch => password.isNotEmpty && password == confirmPassword;
+
+  // Validation
+  bool isStepValid() {
+    switch (_currentStep) {
+      case 0:
+        return selectedRole != null;
+      case 1:
+        return selectedSchool != null;
+      case 2:
+        return firstName.isNotEmpty &&
+            lastName.isNotEmpty &&
+            studentNumber.isNotEmpty &&
+            emailAddress.isNotEmpty &&
+          phoneNumber.isNotEmpty;
+      case 3:
+        return passwordsMatch;
+      default:
+        return false;
+    }
+  }
 
   void updatePassword(String value) {
     password = value;
