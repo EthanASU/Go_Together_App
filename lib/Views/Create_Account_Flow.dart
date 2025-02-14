@@ -114,7 +114,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           ),
                         ),
                         controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 100),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 100),
                       ),
                       // Student Option
                       RadioListTile<String>(
@@ -131,7 +132,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           ),
                         ),
                         controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 100),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 100),
                       ),
                     ],
                   ),
@@ -143,10 +145,11 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Select your school.',style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        fontFamily: 'Poppins',
+                        'Select your school.',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          fontFamily: 'Poppins',
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -157,11 +160,12 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           value: viewModel.selectedSchool,
                           isExpanded: true,
                           decoration: InputDecoration(
-                            contentPadding:
-                              const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
                             border: OutlineInputBorder(),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
                             ),
                           ),
                           onChanged: (newValue) {
@@ -172,10 +176,12 @@ class CreateAccountFlowScreen extends StatelessWidget {
                               value: null,
                               child: Text(
                                 "-Select School-",
-                                style: const TextStyle(fontFamily: 'Poppins', color: Colors.grey),
+                                style: const TextStyle(
+                                    fontFamily: 'Poppins', color: Colors.grey),
                               ),
                             ),
-                            ...viewModel.schools.map<DropdownMenuItem<String>>((String value) {
+                            ...viewModel.schools
+                                .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(
@@ -204,7 +210,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                             children: [
                               const Text(
                                 'First name',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 5),
                               TextFormField(
@@ -223,7 +230,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                             children: [
                               const Text(
                                 'Last name',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 5),
                               TextFormField(
@@ -240,7 +248,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Student ID                                                                       ',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -252,7 +261,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Email address                                                               ',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -264,7 +274,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Phone number                                                                ',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -316,7 +327,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Password',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -329,7 +341,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Confirm Password',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -409,7 +422,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: viewModel.selectedRole != null
                         ? viewModel.nextStep
-                        : null, // Disable until a role is selected
+                        : viewModel
+                            .createAccountOnFirebase, // When finished with sequence then create the account on Firebase
                     style: ElevatedButton.styleFrom(
                       backgroundColor: viewModel.selectedRole != null
                           ? const Color(0xFF8BC34A)
