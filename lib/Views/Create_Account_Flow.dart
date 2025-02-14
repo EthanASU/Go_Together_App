@@ -420,7 +420,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                       ),
                     ),
                   ElevatedButton(
-                    onPressed: viewModel.selectedRole != null
+                    onPressed: viewModel.currentStep < viewModel.totalSteps - 1
                         ? viewModel.nextStep
                         : viewModel
                             .createAccountOnFirebase, // When finished with sequence then create the account on Firebase
