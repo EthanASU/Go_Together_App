@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../Models/step_data.dart';
@@ -25,6 +26,11 @@ class Account {
 }
 
 class CreateAccountFlowViewModel extends ChangeNotifier {
+  final firebaseAuth =
+      FirebaseAuth.instance; // Reference to the Firebase Auth Object
+  final firestoreDB =
+      FirebaseFirestore.instance; // Reference to the Firestore Database
+
   int _currentStep = 0;
   final int totalSteps = 4;
 
@@ -77,8 +83,8 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
 
     try {
       // Create User Email and Password
-      final UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
+      final UserCredential userCredential =
+          await firebaseAuth.createUserWithEmailAndPassword(
               email: acc.emailAddress, password: acc.password);
 
       //  TODO: Verify Phone Number
@@ -121,6 +127,28 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
       print("Error creating account on Firebase");
     } finally {
       print(user);
+    }
+  }
+
+  void storeUserDataInFirestore(Account acc) {
+    final accInfo = <String, dynamic>{
+      "first": firstName,
+      "last": lastName,
+      "studentNum": studentNumber,
+      "email": emailAddress,
+      "phone": phoneNumber,
+      "password": password,
+      "drivePref": false,
+      "bikePref": false,
+      "walkPref": false
+    };
+
+    try {
+      firestoreDB.collection("userInfo").add(accInfo).then(
+          (DocumentReference doc) =>
+              print('DocumentSnapshot added with ID: ${doc.id}'));
+    } catch (e) {
+      print("Error adding document: $e");
     }
   }
 
@@ -206,5 +234,6 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
   void createAccountOnFirebase() {
     Account acc = createUser();
     passUserToFirebase(acc);
+    storeUserDataInFirestore(acc);
   }
 }
