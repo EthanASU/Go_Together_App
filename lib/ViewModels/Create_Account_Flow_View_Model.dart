@@ -1,10 +1,9 @@
 import 'dart:ffi';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../Models/step_data.dart';
 
-class User {
+class Account {
   final String firstName;
   final String lastName;
   final String studentNumber;
@@ -16,7 +15,7 @@ class User {
   String? _selectedSchool;
 
   // Constructor and required fields
-  User(
+  Account(
       {required this.firstName,
       required this.lastName,
       required this.studentNumber,
@@ -56,11 +55,11 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
   bool get passwordsMatch => password.isNotEmpty && password == confirmPassword;
 
   // Create a new User object
-  User createUser() {
-    // TODO: perform checks on user credentials to make sure nothing critical is missing
+  Account createUser() {
+    // Perform checks on user credentials to make sure nothing critical is missing
 
     // Create a new User object to store in database
-    User user = User(
+    Account account = Account(
         firstName: firstName,
         lastName: lastName,
         studentNumber: studentNumber,
@@ -68,13 +67,61 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
         phoneNumber: phoneNumber,
         password: password);
 
-    return user;
+    return account;
   }
 
   // Store new user in Firebase
-  void passUserToFirebase(User user) {
-    final credential = FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: user.emailAddress, password: user.password);
+  Future<void> passUserToFirebase(Account acc) async {
+    // Assign Other User Properties
+    User? user = null;
+
+    try {
+      // Create User Email and Password
+      final UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: acc.emailAddress, password: acc.password);
+
+      //  TODO: Verify Phone Number
+      /* Attempt at adding phone number to account
+      user = userCredential.user;
+      if (user != null) {
+        // Update Display Name
+        String displayName = "${acc.firstName} ${acc.lastName}";
+        await user.updateDisplayName(displayName);
+
+        // Verify the phone number before it can be applied to the account
+        await FirebaseAuth.instance.verifyPhoneNumber(
+          phoneNumber: phoneNumber,
+          verificationCompleted: (PhoneAuthCredential credential) async {
+            await FirebaseAuth.instance.signInWithCredential(credential);
+          },
+          verificationFailed: (FirebaseAuthException e) {
+            if (e.code == 'invalid-phone-number') {
+              print('The provided phone number is not valid.');
+            }
+          },
+          codeSent: (String verificationId, int? resendToken) async {
+            // Update the UI - wait for the user to enter the SMS code
+            String smsCode = 'xxxx';
+
+            // Create a PhoneAuthCredential with the code
+            PhoneAuthCredential credential = PhoneAuthProvider.credential(
+                verificationId: verificationId, smsCode: smsCode);
+
+            // Sign the user in (or link) with the credential
+            await FirebaseAuth.instance.signInWithCredential(credential);
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {
+            // Auto-resolution timed out...
+          },
+        );
+        */
+      // TODO: Verify Email
+    } catch (e) {
+      print("Error creating account on Firebase");
+    } finally {
+      print(user);
+    }
   }
 
   void updatePassword(String value) {
@@ -157,8 +204,7 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
   }
 
   void createAccountOnFirebase() {
-    User user = createUser();
-    // TODO: perform checks on user credentials to make sure nothing critical is missing
-    passUserToFirebase(user);
+    Account acc = createUser();
+    passUserToFirebase(acc);
   }
 }
