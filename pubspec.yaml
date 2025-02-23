@@ -31,6 +31,9 @@ flutter:
     - Assets/Bike_Button.png
     - Assets/Drive_Button.png
     - Assets/person_icon.png
+    - Assets/Drive_icon.png
+    - Assets/Bike_icon.png
+    - Assets/Pedestrian_icon.png
   uses-material-design: true
 
 # Dependencies specify other packages that your package needs in order to work.
