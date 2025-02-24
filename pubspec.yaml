@@ -24,6 +24,13 @@ environment:
 flutter:
   assets:
     - Assets/go_together_logo.png
+    - Assets/Tab_Bar_Calendar_Icon.png
+    - Assets/Tab_Bar_Home_Icon.png
+    - Assets/Tab_Bar_Chat_Icon.png
+    - Assets/Tab_Bar_Add_Icon.png
+    - Assets/Bike_Button.png
+    - Assets/Drive_Button.png
+    - Assets/person_icon.png
   uses-material-design: true
 
 # Dependencies specify other packages that your package needs in order to work.
@@ -36,11 +43,15 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.1.2
+  #  google_fonts: ^6.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  firebase_core: ^3.10.1
+  firebase_auth: ^5.4.2
+  cloud_firestore: ^5.6.4
 
 dev_dependencies:
   flutter_test:

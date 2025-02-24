@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginViewModel extends ChangeNotifier {
+  User? currentUser = null;
+
   String _studentId = '';
   String _password = '';
   bool _isLoading = false;
@@ -31,12 +34,10 @@ class LoginViewModel extends ChangeNotifier {
       await Future.delayed(Duration(seconds: 2));
 
       // Replace with actual authentication logic
-      if (_studentId == "test@example.com" && _password == "password123") {
-        print("Login successful!");
-        // Navigate to the next screen or update the UI
-      } else {
-        throw Exception("Invalid credentials");
-      }
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: _studentId, password: _password);
+      print("Login successful!");
+      currentUser = userCredential.user;
     } catch (e) {
       print("Login failed: $e");
       // Show an error message to the user

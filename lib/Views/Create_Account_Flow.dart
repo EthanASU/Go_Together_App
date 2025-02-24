@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_together_app/Views/Profile_Screen_Setup.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/Create_Account_Flow_View_Model.dart';
 import '../Widgets/dashed_line_painter.dart';
 import '../Widgets/arrow_painter.dart';
+import '../Views/Profile_Screen_Setup.dart';
 
 class CreateAccountFlowScreen extends StatelessWidget {
   const CreateAccountFlowScreen({super.key});
@@ -143,10 +145,11 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Select your school.',style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        fontFamily: 'Poppins',
+                        'Select your school.',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          fontFamily: 'Poppins',
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -294,7 +297,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  "Your studenID was successfully matched in the system",
+                  "Your studentID was successfully matched in the system",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.normal,
@@ -366,67 +369,54 @@ class CreateAccountFlowScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (viewModel.currentStep > 0)
-                    ElevatedButton(
-                      onPressed: () {
-                        viewModel.previousStep();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Back',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                  else
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        '  Back to Login  ',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
                   ElevatedButton(
-                    onPressed: viewModel.selectedRole != null
-                        ? viewModel.nextStep
-                        : null, // Disable until a role is selected
+                    onPressed: () {
+                      if (viewModel.currentStep > 0) {
+                        viewModel.previousStep(); // Go to the previous step
+                      } else {
+                        Navigator.pop(context); // Return to the login screen
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: viewModel.selectedRole != null
-                          ? const Color(0xFF8BC34A)
-                          : Colors.grey,
+                      backgroundColor: Colors.grey,
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: Text(
-                      viewModel.currentStep < viewModel.totalSteps - 1
-                          ? 'Next'
-                          : 'Go',
+                      viewModel.currentStep > 0 ? 'Back' : ' Back to Login ', // Change button text dynamically
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                       ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: viewModel.isStepValid()
+                        ? () {
+                            if (viewModel.currentStep < viewModel.totalSteps - 1) {
+                              viewModel.nextStep();
+                            } else {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProfileSetUp(),
+                                ),
+                              );
+                            }
+                          }
+                        : viewModel.createAccountOnFirebase, // When finished with sequence then create the account on Firebase
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: viewModel.isStepValid() ? Colors.green.shade400 : Colors.grey,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      viewModel.currentStep < viewModel.totalSteps - 1 ? 'Next' : 'Go',
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
                 ],
