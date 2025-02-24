@@ -145,10 +145,11 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Select your school.',style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 20,
-                        fontFamily: 'Poppins',
+                        'Select your school.',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 20,
+                          fontFamily: 'Poppins',
                         ),
                       ),
                       const SizedBox(height: 40),
@@ -370,7 +371,11 @@ class CreateAccountFlowScreen extends StatelessWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      viewModel.previousStep();
+                      if (viewModel.currentStep > 0) {
+                        viewModel.previousStep(); // Go to the previous step
+                      } else {
+                        Navigator.pop(context); // Return to the login screen
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.grey,
@@ -379,9 +384,9 @@ class CreateAccountFlowScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Back',
-                      style: TextStyle(
+                    child: Text(
+                      viewModel.currentStep > 0 ? 'Back' : ' Back to Login ', // Change button text dynamically
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                       ),
@@ -401,7 +406,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                               );
                             }
                           }
-                        : null, // Disable if step is not valid
+                        : viewModel.createAccountOnFirebase, // When finished with sequence then create the account on Firebase
                     style: ElevatedButton.styleFrom(
                       backgroundColor: viewModel.isStepValid() ? Colors.green.shade400 : Colors.grey,
                       padding: const EdgeInsets.symmetric(vertical: 15),
