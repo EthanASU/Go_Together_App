@@ -254,9 +254,24 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
     }
   }
 
-  void createAccountOnFirebase() {
-    Account acc = createUser();
-    passUserToFirebase(acc);
-    storeUserDataInFirestore(acc);
+  Future<bool> createAccountOnFirebase() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailAddress,
+        password: password,
+      );
+
+      // Store user in details in Firestore
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': emailAddress,
+      });
+
+      return true; // Account created
+    } catch (e) {
+      print("Error creating account: $e");
+      return false; // Account creation failed
+    }
   }
 }

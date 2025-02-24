@@ -393,20 +393,24 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: viewModel.isStepValid()
-                        ? () {
+                    onPressed: () async {
                             if (viewModel.currentStep < viewModel.totalSteps - 1) {
                               viewModel.nextStep();
                             } else {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProfileSetUp(),
-                                ),
-                              );
+                              bool success = await viewModel.createAccountOnFirebase(); // Ensure this method returns a success boolean
+                              if (success) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => ProfileSetUp()),
+                                );
+                              } else {
+                                // Handle failure case (optional)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Account creation failed. Please try agin')),
+                                );
+                              }
                             }
-                          }
-                        : viewModel.createAccountOnFirebase, // When finished with sequence then create the account on Firebase
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: viewModel.isStepValid() ? Colors.green.shade400 : Colors.grey,
                       padding: const EdgeInsets.symmetric(vertical: 15),
