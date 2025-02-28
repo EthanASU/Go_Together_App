@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_together_app/Views/Profile_Screen_Setup.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/Create_Account_Flow_View_Model.dart';
 import '../Widgets/dashed_line_painter.dart';
 import '../Widgets/arrow_painter.dart';
+import '../Views/Profile_Screen_Setup.dart';
 
 class CreateAccountFlowScreen extends StatelessWidget {
   const CreateAccountFlowScreen({super.key});
@@ -114,8 +116,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           ),
                         ),
                         controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 100),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 100),
                       ),
                       // Student Option
                       RadioListTile<String>(
@@ -132,8 +133,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           ),
                         ),
                         controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 100),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 100),
                       ),
                     ],
                   ),
@@ -160,12 +160,11 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           value: viewModel.selectedSchool,
                           isExpanded: true,
                           decoration: InputDecoration(
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 10),
+                            contentPadding:
+                              const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                             border: OutlineInputBorder(),
                             enabledBorder: OutlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: Colors.grey.shade300),
+                              borderSide: BorderSide(color: Colors.grey.shade300),
                             ),
                           ),
                           onChanged: (newValue) {
@@ -176,12 +175,10 @@ class CreateAccountFlowScreen extends StatelessWidget {
                               value: null,
                               child: Text(
                                 "-Select School-",
-                                style: const TextStyle(
-                                    fontFamily: 'Poppins', color: Colors.grey),
+                                style: const TextStyle(fontFamily: 'Poppins', color: Colors.grey),
                               ),
                             ),
-                            ...viewModel.schools
-                                .map<DropdownMenuItem<String>>((String value) {
+                            ...viewModel.schools.map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(
@@ -210,8 +207,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                             children: [
                               const Text(
                                 'First name',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 5),
                               TextFormField(
@@ -230,8 +226,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                             children: [
                               const Text(
                                 'Last name',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 5),
                               TextFormField(
@@ -248,8 +243,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Student ID                                                                       ',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -261,8 +255,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Email address                                                               ',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -274,8 +267,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Phone number                                                                ',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -305,7 +297,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 const Text(
-                  "Your studenID was successfully matched in the system",
+                  "Your studentID was successfully matched in the system",
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.normal,
@@ -327,8 +319,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Password',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -341,8 +332,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Confirm Password',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -379,68 +369,58 @@ class CreateAccountFlowScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (viewModel.currentStep > 0)
-                    ElevatedButton(
-                      onPressed: () {
-                        viewModel.previousStep();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        'Back',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                  else
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      child: const Text(
-                        '  Back to Login  ',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
                   ElevatedButton(
-                    onPressed: viewModel.currentStep < viewModel.totalSteps - 1
-                        ? viewModel.nextStep
-                        : viewModel
-                            .createAccountOnFirebase, // When finished with sequence then create the account on Firebase
+                    onPressed: () {
+                      if (viewModel.currentStep > 0) {
+                        viewModel.previousStep(); // Go to the previous step
+                      } else {
+                        Navigator.pop(context); // Return to the login screen
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: viewModel.selectedRole != null
-                          ? const Color(0xFF8BC34A)
-                          : Colors.grey,
+                      backgroundColor: Colors.grey,
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: Text(
-                      viewModel.currentStep < viewModel.totalSteps - 1
-                          ? 'Next'
-                          : 'Go',
+                      viewModel.currentStep > 0 ? 'Back' : ' Back to Login ', // Change button text dynamically
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                       ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                            if (viewModel.currentStep < viewModel.totalSteps - 1) {
+                              viewModel.nextStep();
+                            } else {
+                              bool success = await viewModel.createAccountOnFirebase(); // Ensure this method returns a success boolean
+                              if (success) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => ProfileSetUp()),
+                                );
+                              } else {
+                                // Handle failure case (optional)
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Account creation failed. Please try agin')),
+                                );
+                              }
+                            }
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: viewModel.isStepValid() ? Colors.green.shade400 : Colors.grey,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      viewModel.currentStep < viewModel.totalSteps - 1 ? 'Next' : 'Go',
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
                 ],

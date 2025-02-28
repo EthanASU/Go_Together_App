@@ -1,4 +1,5 @@
 import 'dart:ffi';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,11 +19,11 @@ class Account {
   // Constructor and required fields
   Account(
       {required this.firstName,
-      required this.lastName,
-      required this.studentNumber,
-      required this.emailAddress,
-      required this.phoneNumber,
-      required this.password});
+        required this.lastName,
+        required this.studentNumber,
+        required this.emailAddress,
+        required this.phoneNumber,
+        required this.password});
 }
 
 class CreateAccountFlowViewModel extends ChangeNotifier {
@@ -30,22 +31,13 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
       FirebaseAuth.instance; // Reference to the Firebase Auth Object
   final firestoreDB =
       FirebaseFirestore.instance; // Reference to the Firestore Database
-
   int _currentStep = 0;
   final int totalSteps = 4;
 
-  // Fields for third step
-  String firstName = '';
-  String lastName = '';
-  String studentNumber = '';
-  String emailAddress = '';
-  String phoneNumber = '';
-
-  // Fields for fourth step
-  String password = '';
-  String confirmPassword = '';
-
+  // Step 1: User role
   String? _selectedRole;
+
+  // Step 2: School selection
   String? _selectedSchool;
   List<String> schools = [
     "Thomas Gregg",
@@ -53,6 +45,17 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
     "Kinedezi Academy",
     "Carl Wilde"
   ];
+
+  // Step 3: User info
+  String firstName = '';
+  String lastName = '';
+  String studentNumber = '';
+  String emailAddress = '';
+  String phoneNumber = '';
+
+  // Step 4: Passwords
+  String password = '';
+  String confirmPassword = '';
 
   int get currentStep => _currentStep;
   String? get selectedRole => _selectedRole;
@@ -84,8 +87,8 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
     try {
       // Create User Email and Password
       final UserCredential userCredential =
-          await firebaseAuth.createUserWithEmailAndPassword(
-              email: acc.emailAddress, password: acc.password);
+      await firebaseAuth.createUserWithEmailAndPassword(
+          email: acc.emailAddress, password: acc.password);
 
       //  TODO: Verify Phone Number
       /* Attempt at adding phone number to account
@@ -145,10 +148,30 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
 
     try {
       firestoreDB.collection("userInfo").add(accInfo).then(
-          (DocumentReference doc) =>
+              (DocumentReference doc) =>
               print('DocumentSnapshot added with ID: ${doc.id}'));
     } catch (e) {
       print("Error adding document: $e");
+    }
+  }
+
+  // Validation
+  bool isStepValid() {
+    switch (_currentStep) {
+      case 0:
+        return selectedRole != null;
+      case 1:
+        return selectedSchool != null;
+      case 2:
+        return firstName.isNotEmpty &&
+            lastName.isNotEmpty &&
+            studentNumber.isNotEmpty &&
+            emailAddress.isNotEmpty &&
+          phoneNumber.isNotEmpty;
+      case 3:
+        return passwordsMatch;
+      default:
+        return false;
     }
   }
 
@@ -231,9 +254,24 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
     }
   }
 
-  void createAccountOnFirebase() {
-    Account acc = createUser();
-    passUserToFirebase(acc);
-    storeUserDataInFirestore(acc);
+  Future<bool> createAccountOnFirebase() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailAddress,
+        password: password,
+      );
+
+      // Store user in details in Firestore
+      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': emailAddress,
+      });
+
+      return true; // Account created
+    } catch (e) {
+      print("Error creating account: $e");
+      return false; // Account creation failed
+    }
   }
 }
