@@ -118,19 +118,19 @@ class ProfileCompletionScreen extends StatelessWidget {
                       children: [
                         _buildTransportOption(
                           context,
-                          'Drive',
+                          'drive',
                           'Assets/Drive_Button.png',
                           viewModel,
                         ),
                         _buildTransportOption(
                           context,
-                          'Bike',
+                          'bike',
                           'Assets/Bike_Button.png',
                           viewModel,
                         ),
                         _buildTransportOption(
                           context,
-                          'Walk',
+                          'walk',
                           'Assets/person_icon.png',
                           viewModel,
                         ),
@@ -164,7 +164,8 @@ class ProfileCompletionScreen extends StatelessWidget {
 
                       //Year Label and DropDown
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,  // Makes dropdowns full width
+                        crossAxisAlignment: CrossAxisAlignment
+                            .stretch, // Makes dropdowns full width
                         children: [
                           // Year Dropdown
                           const Text(
@@ -193,7 +194,8 @@ class ProfileCompletionScreen extends StatelessWidget {
                             }).toList(),
                             onChanged: viewModel.updateCarYear,
                           ),
-                          const SizedBox(height: 16),  // Vertical spacing between dropdowns
+                          const SizedBox(
+                              height: 16), // Vertical spacing between dropdowns
 
                           //Make Label and DropDown
                           const Text(
@@ -222,7 +224,8 @@ class ProfileCompletionScreen extends StatelessWidget {
                             }).toList(),
                             onChanged: viewModel.updateCarMake,
                           ),
-                          const SizedBox(height: 16),  // Vertical spacing between dropdowns
+                          const SizedBox(
+                              height: 16), // Vertical spacing between dropdowns
 
                           //Model Label and DropDown
                           const Text(
@@ -340,14 +343,15 @@ class ProfileCompletionScreen extends StatelessWidget {
                             child: ElevatedButton(
                               onPressed: viewModel.isCarInfoComplete
                                   ? () {
-                                viewModel.saveCarInformation();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Saved!'),
-                                    backgroundColor: Color(0xFF8BC541),
-                                  ),
-                                );
-                              }
+                                      viewModel.saveCarInformation();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Saved!'),
+                                          backgroundColor: Color(0xFF8BC541),
+                                        ),
+                                      );
+                                    }
                                   : null,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: viewModel.isCarInfoComplete
@@ -396,7 +400,6 @@ class ProfileCompletionScreen extends StatelessWidget {
                 ),
               ),
             ),
-
 
             // Bottom Navigation Bar
             BottomNavigationBar(
@@ -465,11 +468,11 @@ class ProfileCompletionScreen extends StatelessWidget {
   }
 
   Widget _buildTransportOption(
-      BuildContext context,
-      String mode,
-      String iconPath,
-      ProfilePersonalSetUpViewModel viewModel,
-      ) {
+    BuildContext context,
+    String mode,
+    String iconPath,
+    ProfilePersonalSetUpViewModel viewModel,
+  ) {
     final isSelected = viewModel.transportationModes.contains(mode);
 
     return GestureDetector(
@@ -488,9 +491,8 @@ class ProfileCompletionScreen extends StatelessWidget {
           children: [
             Image.asset(
               iconPath,
-              height: 60,  // Adjust size as needed
-              width: 60,   // Adjust size as needed
-
+              height: 60, // Adjust size as needed
+              width: 60, // Adjust size as needed
             ),
             const SizedBox(height: 4),
             Text(

@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class ProfileViewModel extends ChangeNotifier{
-  String userName = 'Raymond';  // Placeholder
+class ProfileViewModel extends ChangeNotifier {
+  String userName = 'Raymond'; // Placeholder
   int completedRides = 0; // Placeholder
   bool isProfileComplete = false; // Placeholder for profile completion check
 
@@ -24,7 +24,8 @@ class ProfileViewModel extends ChangeNotifier{
 
         if (userDoc.exists && userDoc.data() != null) {
           final data = userDoc.data() as Map<String, dynamic>;
-          userName = data['firstName'] ?? "User"; // Default to "User" if missing
+          userName =
+              data['firstName'] ?? "User"; // Default to "User" if missing
           notifyListeners();
         }
       }

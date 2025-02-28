@@ -19,11 +19,11 @@ class Account {
   // Constructor and required fields
   Account(
       {required this.firstName,
-        required this.lastName,
-        required this.studentNumber,
-        required this.emailAddress,
-        required this.phoneNumber,
-        required this.password});
+      required this.lastName,
+      required this.studentNumber,
+      required this.emailAddress,
+      required this.phoneNumber,
+      required this.password});
 }
 
 class CreateAccountFlowViewModel extends ChangeNotifier {
@@ -31,6 +31,7 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
       FirebaseAuth.instance; // Reference to the Firebase Auth Object
   final firestoreDB =
       FirebaseFirestore.instance; // Reference to the Firestore Database
+
   int _currentStep = 0;
   final int totalSteps = 4;
 
@@ -87,8 +88,8 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
     try {
       // Create User Email and Password
       final UserCredential userCredential =
-      await firebaseAuth.createUserWithEmailAndPassword(
-          email: acc.emailAddress, password: acc.password);
+          await firebaseAuth.createUserWithEmailAndPassword(
+              email: acc.emailAddress, password: acc.password);
 
       //  TODO: Verify Phone Number
       /* Attempt at adding phone number to account
@@ -148,7 +149,7 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
 
     try {
       firestoreDB.collection("userInfo").add(accInfo).then(
-              (DocumentReference doc) =>
+          (DocumentReference doc) =>
               print('DocumentSnapshot added with ID: ${doc.id}'));
     } catch (e) {
       print("Error adding document: $e");
@@ -167,7 +168,7 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
             lastName.isNotEmpty &&
             studentNumber.isNotEmpty &&
             emailAddress.isNotEmpty &&
-          phoneNumber.isNotEmpty;
+            phoneNumber.isNotEmpty;
       case 3:
         return passwordsMatch;
       default:
@@ -256,16 +257,30 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
 
   Future<bool> createAccountOnFirebase() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailAddress,
         password: password,
       );
 
-      // Store user in details in Firestore
-      await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
+      // Store basic user info in details in Firestore
+      await firestoreDB.collection('users').doc(userCredential.user!.uid).set({
         'firstName': firstName,
         'lastName': lastName,
         'email': emailAddress,
+        'phoneNumber': phoneNumber,
+        'studentID': studentNumber,
+        'school': _selectedSchool
+      });
+
+      // Initialize Transportation Prefs in DB; To be updated in Profile Personal View Model
+      await firestoreDB
+          .collection('transPrefs')
+          .doc(userCredential.user!.uid)
+          .set({
+        'bike': false,
+        'drive': false,
+        'walk': false,
       });
 
       return true; // Account created
