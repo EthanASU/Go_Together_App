@@ -5,7 +5,6 @@ import '../ViewModels/Profile_Personal_View_Model.dart';
 import 'profile_screen_setup.dart';
 
 class AddressFormScreen extends StatelessWidget{
-  // const AddressFormScreen({Key? key}) : super(key: key);
 
   final ProfilePersonalSetUpViewModel viewModel;
 
@@ -15,7 +14,6 @@ class AddressFormScreen extends StatelessWidget{
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    //final viewModel = context.watch<ProfilePersonalSetUpViewModel>();
 
     return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,27 +148,37 @@ class AddressFormScreen extends StatelessWidget{
                   Center(
                     child: ElevatedButton(
                       onPressed: viewModel.isAddressFormValid
-                          ? viewModel.saveAddress
-                          : null,  // Button disabled when form invalid
+                          ? () {
+                        if (viewModel.currentEditingAddressIndex != -1) {
+                          viewModel.updateExistingAddress();
+                        } else {
+
+                          viewModel.saveAddress();
+
+                          viewModel.showAddressForm = false;
+                          viewModel.notifyListeners();
+                        }
+                      }
+                          : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF8BC541),        // Color when enabled
-                        disabledBackgroundColor: const Color(0x808BC541), // Color when disabled
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 55,
-                          vertical: 10,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(23),
-                        ),
-                      ),
-                      child: const Text(
-                        'Add',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 23,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Poppins',
-                        ),
+                            backgroundColor: const Color(0xFF8BC541),        // Color when enabled
+                            disabledBackgroundColor: const Color(0x808BC541), // Color when disabled
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 55,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(23),
+                            ),
+                          ),
+                          child: Text(
+                            viewModel.currentEditingAddressIndex != -1 ? 'Update' : 'Add',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                            ),
                       ),
                     ),
                   ),
