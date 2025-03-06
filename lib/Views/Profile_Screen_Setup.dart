@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
 import 'Profile_Personal_SetUp.dart';
+// import 'package:google_fonts/google_fonts.dart';
 
 class ProfileSetUp extends StatelessWidget {
   const ProfileSetUp({super.key});
@@ -16,21 +18,8 @@ class ProfileSetUp extends StatelessWidget {
   }
 }
 
-class ProfileScreenContent extends StatefulWidget {
+class ProfileScreenContent extends StatelessWidget {
   const ProfileScreenContent({super.key});
-
-  @override
-  _ProfileScreenContentState createState() => _ProfileScreenContentState();
-}
-
-class _ProfileScreenContentState extends State<ProfileScreenContent> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProfileViewModel>(context, listen: false).fetchUserName();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +33,10 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
             // User Name section
             Text(
               viewModel.userName,
+              // style: GoogleFonts.poppins(
+              //   fontSize: 24,
+              //   fontWeight: FontWeight.bold,
+              // ),
               style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -148,16 +141,52 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 ),
               ),
               const SizedBox(height: 20),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     if (viewModel.currentStep < viewModel.totalSteps - 1) {
+              //       viewModel.nextStep();
+              //     } else {
+              //       // On the final step, navigate to profile completion
+              //       Navigator.of(context).pushReplacement(
+              //         MaterialPageRoute(
+              //           builder: (context) => const ProfileCompletionScreen(),
+              //         ),
+              //       );
+              //     }
+              // //Go Button
+              //     },
+              //       style: ElevatedButton.styleFrom(
+              //         backgroundColor: const Color(0xFF8BC541),
+              //         padding: const EdgeInsets.symmetric(
+              //           horizontal: 40,
+              //           vertical: 7,
+              //         ),
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(20),
+              //         ),
+              //       ),
+              //       child:  Text(
+              //         viewModel.currentStep < viewModel.totalSteps - 1
+              //             ? ''
+              //             : 'Go',
+              //         style: const TextStyle(
+              //           fontFamily: 'Poppins',
+              //           fontSize: 18,
+              //           fontWeight: FontWeight.bold,
+              //           color: Colors.white,
+              //         ),
+              //       ),
+              //     ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
+                      MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
-                        create: (_) => ProfilePersonalSetUpViewModel(),
-                        child: const ProfileCompletionScreen(),
+                    create: (_) => ProfilePersonalSetUpViewModel(),
+                    child: const ProfileCompletionScreen(),
+                  ),
                       ),
-                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(

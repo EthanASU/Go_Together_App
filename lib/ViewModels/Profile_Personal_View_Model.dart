@@ -472,22 +472,8 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     phoneController.dispose();
     super.dispose();
   }
-}
 
-class CarEntry {
-  final String year;
-  final String make;
-  final String model;
-  final String passengerCount;
-
-  CarEntry({
-    required this.year,
-    required this.make,
-    required this.model,
-    required this.passengerCount,
-  });
-
-//--------------- Fire Store Methods ---------------//
+  //--------------- Fire Store Methods ---------------//
   /// Update Phone Number in database
   Future<void> updatePhoneNumberOnFirebase(String phoneNum) async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -536,4 +522,18 @@ class CarEntry {
 
     print("User transportation prefs $type stored in db as $setting");
   }
+}
+
+class CarEntry {
+  final String year;
+  final String make;
+  final String model;
+  final String passengerCount;
+
+  CarEntry({
+    required this.year,
+    required this.make,
+    required this.model,
+    required this.passengerCount,
+  });
 }
