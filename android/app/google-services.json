@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "628465738680",
+    "project_id": "gotogetherapp-f80b0",
+    "storage_bucket": "gotogetherapp-f80b0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:628465738680:android:3f029a8294ff329ff2254d",
+        "android_client_info": {
+          "package_name": "com.ethanjrivera.go_together_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpkAmTGYN_PAGV9KIfqBGyNAQ66Gbzl0s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
