@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfileViewModel extends ChangeNotifier{
-  String userName = 'Raymond';  // Placeholder
+  String userName = '';  // Placeholder
   int completedRides = 0; // Placeholder
   bool isProfileComplete = false; // Placeholder for profile completion check
 

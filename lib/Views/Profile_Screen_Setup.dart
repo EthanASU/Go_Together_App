@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
 import 'Profile_Personal_SetUp.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../Views/LoginView.dart';
 
 class ProfileSetUp extends StatelessWidget {
   const ProfileSetUp({super.key});
@@ -148,6 +150,16 @@ class _ProfileScreenContentState extends State<ProfileScreenContent> {
                 ),
               ),
               const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()), // Navigate back to login screen
+                  );
+                },
+                child: Text("Logout"),
+              ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushReplacement(
