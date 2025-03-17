@@ -3,22 +3,29 @@ import 'package:provider/provider.dart'; // Make sure this import works
 import 'ViewModels/LoginViewModel.dart'; // Adjust the path as per your project structure
 import 'Views/LoginView.dart'; // Adjust the path for your login page
 import 'Views/Splash_Screen.dart';
+import 'Views/Profile_Screen_Setup.dart';
 // Firebase Imports
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
-Future<void> main() async {
+void main() async {
   // Initialize Firebase
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => LoginViewModel(),
-      child: MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginViewModel()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: MyHomePage(),
+        routes: {
+          '/profile': (context) => ProfileSetUp(),
+        },
+      ),
     ),
   );
 }
