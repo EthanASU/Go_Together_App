@@ -52,6 +52,7 @@ import 'firebase_options.dart';
 //   }
 // }
 Future<void> main() async {
+  // Must use this to initialize Firebase; must be async
   // Initialize Firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -72,13 +73,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Your App Name',
+      title: 'GoTogether',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       // Set ProfileScreen as the home widget instead of your login/create account flow
-      home: const ProfileSetUp(), // Update this to match your class name
+      home: MyHomePage(), // Start at login screen
     );
   }
 }

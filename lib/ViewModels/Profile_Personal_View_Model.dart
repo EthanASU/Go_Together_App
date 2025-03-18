@@ -473,7 +473,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  //--------------- Fire Store Methods ---------------//
+  //--------------- Firestore Methods ---------------//
   /// Update Phone Number in database
   Future<void> updatePhoneNumberOnFirebase(String phoneNum) async {
     User? user = FirebaseAuth.instance.currentUser;

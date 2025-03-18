@@ -31,13 +31,13 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Simulate a network request with a delay
-      await Future.delayed(Duration(seconds: 2));
-      // Replace with actual authentication logic
+      // Authenticate user with credentials
       final userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: _studentId, password: _password);
-      print("Login successful!");
+
+      // TODO: Navigate user to the profile page and load their information
       currentUser = userCredential.user;
+      print("Login successful!");
     } catch (e) {
       print("Login failed: $e");
       // Show an error message to the user
