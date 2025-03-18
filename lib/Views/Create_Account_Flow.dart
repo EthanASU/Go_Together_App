@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../ViewModels/Create_Account_Flow_View_Model.dart';
 import '../Widgets/dashed_line_painter.dart';
 import '../Widgets/arrow_painter.dart';
-import '../Views/Profile_Screen_Setup.dart';
 
 class CreateAccountFlowScreen extends StatelessWidget {
   const CreateAccountFlowScreen({super.key});
@@ -68,10 +67,10 @@ class CreateAccountFlowScreen extends StatelessWidget {
               ),
               if (viewModel.currentStep == 0) ...[
                 Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     children: <Widget>[
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Image.asset(
                         'Assets/go_together_logo.png',
                         height: 100,
@@ -139,14 +138,14 @@ class CreateAccountFlowScreen extends StatelessWidget {
                   ),
                 ),
               ] else if (viewModel.currentStep == 1) ...[
-                Spacer(),
+                const Spacer(),
                 Center(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
+                      const Text(
                         'Select your school.',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 20,
                           fontFamily: 'Poppins',
@@ -162,7 +161,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           decoration: InputDecoration(
                             contentPadding:
                               const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                            border: OutlineInputBorder(),
+                            border: const OutlineInputBorder(),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.grey.shade300),
                             ),
@@ -171,11 +170,11 @@ class CreateAccountFlowScreen extends StatelessWidget {
                             viewModel.selectSchool(newValue);
                           },
                           items: [
-                            DropdownMenuItem<String>(
+                            const DropdownMenuItem<String>(
                               value: null,
                               child: Text(
                                 "-Select School-",
-                                style: const TextStyle(fontFamily: 'Poppins', color: Colors.grey),
+                                style: TextStyle(fontFamily: 'Poppins', color: Colors.grey),
                               ),
                             ),
                             ...viewModel.schools.map<DropdownMenuItem<String>>((String value) {
@@ -186,17 +185,17 @@ class CreateAccountFlowScreen extends StatelessWidget {
                                   style: const TextStyle(fontFamily: 'Poppins'),
                                 ),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
                       ),
                     ],
                   ),
                 ),
-                Spacer(),
-                Spacer(),
+                const Spacer(),
+                const Spacer(),
               ] else if (viewModel.currentStep == 2) ...[
-                Spacer(),
+                const Spacer(),
                 Column(
                   children: [
                     Row(
@@ -278,7 +277,7 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                Spacer(),
+                const Spacer(),
               ] else if (viewModel.currentStep == 3) ...[
                 const SizedBox(height: 20),
                 Text(
@@ -344,8 +343,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     if (viewModel.passwordsMatch)
-                      Row(
-                        children: const [
+                      const Row(
+                        children: [
                           Icon(
                             Icons.check_circle,
                             color: Colors.green,
@@ -401,12 +400,12 @@ class CreateAccountFlowScreen extends StatelessWidget {
                               if (success) {
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => ProfileSetUp()),
+                                  MaterialPageRoute(builder: (context) => const ProfileSetUp()),
                                 );
                               } else {
                                 // Handle failure case (optional)
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Account creation failed. Please try agin')),
+                                  const SnackBar(content: Text('Account creation failed. Please try agin')),
                                 );
                               }
                             }

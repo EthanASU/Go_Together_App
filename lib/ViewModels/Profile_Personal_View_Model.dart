@@ -428,10 +428,10 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     _contactPhone = '';
     _relationship = '';
     phoneController.clear(); // Clear the phone controller
-    phoneController.value = TextEditingValue(
+    phoneController.value = const TextEditingValue(
       // Reset to empty with proper hint text
       text: '',
-      selection: const TextSelection.collapsed(offset: 0),
+      selection: TextSelection.collapsed(offset: 0),
     );
     notifyListeners();
   }

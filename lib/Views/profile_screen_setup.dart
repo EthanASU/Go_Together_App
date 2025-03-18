@@ -106,7 +106,7 @@ class ProfileScreenContent extends StatelessWidget {
                   children: [
                     Text(
                       'Your friends',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -184,10 +184,17 @@ class ProfileScreenContent extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
+<<<<<<< Updated upstream
                             MyHomePage()), // Navigate back to login screen
                   );
                 },
                 child: Text("Logout"),
+=======
+                            const MyHomePage()), // Navigate back to login screen
+                  );
+                },
+                child: const Text("Logout"),
+>>>>>>> Stashed changes
               ),
               ElevatedButton(
                 onPressed: () {

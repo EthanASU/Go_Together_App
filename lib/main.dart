@@ -7,7 +7,6 @@ import 'Views/Profile_Screen_Setup.dart';
 // Firebase Imports
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'firebase_options.dart';
 
 void main() async {
   // Initialize Firebase
@@ -21,9 +20,9 @@ void main() async {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: MyHomePage(),
+        home: const MyHomePage(),
         routes: {
-          '/profile': (context) => ProfileSetUp(),
+          '/profile': (context) => const ProfileSetUp(),
         },
       ),
     ),
@@ -31,9 +30,11 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SplashScreenWithDelay(),
     );
@@ -41,6 +42,8 @@ class MyApp extends StatelessWidget {
 }
 
 class SplashScreenWithDelay extends StatefulWidget {
+  const SplashScreenWithDelay({super.key});
+
   @override
   _SplashScreenWithDelayState createState() => _SplashScreenWithDelayState();
 }
@@ -52,13 +55,13 @@ class _SplashScreenWithDelayState extends State<SplashScreenWithDelay> {
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MyHomePage()),
+        MaterialPageRoute(builder: (context) => const MyHomePage()),
       );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return SplashScreen();
+    return const SplashScreen();
   }
 }

@@ -7,8 +7,8 @@ class AddressCard extends StatelessWidget {
   const AddressCard({
     required this.address,
     required this.onEdit,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class AddressCard extends StatelessWidget {
                 children: [
                   Text(
                     address['name'],
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Poppins',
@@ -32,14 +32,14 @@ class AddressCard extends StatelessWidget {
                   ),
                   Text(
                     '${address['streetAddress']}, ${address['aptSuite']}'.trim(),
-                    style: TextStyle(fontFamily: 'Poppins'),
+                    style: const TextStyle(fontFamily: 'Poppins'),
                   ),
                   Text(
                     '${address['city']}, ${address['state']} ${address['zipCode']}',
-                    style: TextStyle(fontFamily: 'Poppins'),
+                    style: const TextStyle(fontFamily: 'Poppins'),
                   ),
                   if (address['isDefault'])
-                    Text(
+                    const Text(
                       'Default Address',
                       style: TextStyle(
                         color: Color(0xFF8BC541),
@@ -50,7 +50,7 @@ class AddressCard extends StatelessWidget {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
               onPressed: onEdit,
             ),
           ],

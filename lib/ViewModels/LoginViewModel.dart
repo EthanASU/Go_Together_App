@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../Views/Profile_Screen_Setup.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  User? currentUser = null;
+  User? currentUser;
 
   String studentIdOrEmail = '';
   String password = '';
@@ -45,7 +44,8 @@ class LoginViewModel extends ChangeNotifier {
           throw Exception("No account found with this Student ID.");
         }
 
-        email = querySnapshot.docs.first['email']; // Get the email from Firestore
+        email =
+            querySnapshot.docs.first['email']; // Get the email from Firestore
       }
 
       // Firebase Authentication (Email & Password)
@@ -56,7 +56,6 @@ class LoginViewModel extends ChangeNotifier {
 
       print("Login successful! User ID: ${userCredential.user?.uid}");
       Navigator.pushReplacementNamed(context, '/profile');
-
     } catch (e) {
       print("Login failed: $e");
       errorMessage = "Invalid credentials. Please try again.";

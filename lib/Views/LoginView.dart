@@ -3,13 +3,12 @@ import 'package:go_together_app/ViewModels/Create_Account_Flow_View_Model.dart';
 import 'package:go_together_app/Views/Create_Account_Flow.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/LoginViewModel.dart';
-import 'Profile_Screen_Setup.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) => LoginViewModel(),
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: MyHomePage(),
       ),
@@ -18,6 +17,8 @@ void main() {
 }
 
 class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<LoginViewModel>(context);
@@ -29,12 +30,12 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            SizedBox(height: 150),
+            const SizedBox(height: 150),
             Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: <Widget>[
-                  Text(
+                  const Text(
                     "Welcome to",
                     style: TextStyle(
                       color: Colors.black,
@@ -42,7 +43,7 @@ class MyHomePage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Image.asset(
                     'Assets/go_together_logo.png',
                     height: 100,
@@ -51,26 +52,26 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 children: <Widget>[
                   TextField(
                     onChanged: viewModel.updateStudentId,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: "Student ID or email",
                       border: OutlineInputBorder(),
                     ),
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   TextField(
                     onChanged: viewModel.updatePassword,
                     obscureText: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: "Password",
                       border: OutlineInputBorder(),
                     ),
-                    style: TextStyle(fontSize: 16),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   Align(
                     alignment: Alignment.centerRight,
@@ -78,21 +79,21 @@ class MyHomePage extends StatelessWidget {
                       onPressed: () {
                         // Forgot password logic
                       },
-                      child: Text("Forgot your password?"),
+                      child: const Text("Forgot your password?"),
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   if (viewModel.errorMessage.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Text(
                         viewModel.errorMessage,
-                        style: TextStyle(color: Colors.red, fontSize: 14),
+                        style: const TextStyle(color: Colors.red, fontSize: 14),
                       ),
                     ),
 
                   if (viewModel.isLoading)
-                    CircularProgressIndicator()
+                    const CircularProgressIndicator()
                   else
                     ElevatedButton(
                       onPressed: () {
@@ -103,17 +104,17 @@ class MyHomePage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: viewModel.canSignIn ? Colors.green : Colors.transparent,
-                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
                       ),
-                      child: Text(
+                      child: const Text(
                         "Sign in",
                         style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                       ),
                     ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
                       // Navigate the Create account flow
@@ -127,7 +128,7 @@ class MyHomePage extends StatelessWidget {
                         ),
                       );
                     },
-                    child: Text(
+                    child: const Text(
                         "Don't have an account? Create an account here!",
                         style: TextStyle(
                           fontSize: 16,

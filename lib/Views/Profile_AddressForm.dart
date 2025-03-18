@@ -1,8 +1,6 @@
 //import packages
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
-import 'profile_screen_setup.dart';
 
 class AddressFormScreen extends StatelessWidget{
   // const AddressFormScreen({Key? key}) : super(key: key);
@@ -10,9 +8,9 @@ class AddressFormScreen extends StatelessWidget{
   final ProfilePersonalSetUpViewModel viewModel;
 
   const AddressFormScreen({
-    Key? key,
+    super.key,
     required this.viewModel,
-  }) : super(key: key);
+  });
   @override
   Widget build(BuildContext context) {
     //final viewModel = context.watch<ProfilePersonalSetUpViewModel>();

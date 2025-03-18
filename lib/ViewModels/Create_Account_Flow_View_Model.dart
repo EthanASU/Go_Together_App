@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'package:flutter/material.dart';
 import '../Models/step_data.dart';
 // Firebase Imports
@@ -161,14 +160,17 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
 
   Color getArrowColor(int arrowIndex) {
     if (arrowIndex == 0) return Colors.orange.shade400;
-    if (arrowIndex == 1)
+    if (arrowIndex == 1) {
       return _currentStep >= 1 ? Colors.green : Colors.grey.shade300;
-    if (arrowIndex == 2)
+    }
+    if (arrowIndex == 2) {
       return _currentStep >= 2 ? Colors.amber.shade900 : Colors.grey.shade300;
-    if (arrowIndex == 3)
+    }
+    if (arrowIndex == 3) {
       return _currentStep >= 3
           ? Colors.lightBlue.shade700
           : Colors.grey.shade300;
+    }
     return Colors.grey.shade300;
   }
 
@@ -183,7 +185,7 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
   // Store new user in Firebase
   Future<void> passUserToFirebase(Account acc) async {
     // Assign Other User Properties
-    User? user = null;
+    User? user;
 
     try {
       // Create User Email and Password

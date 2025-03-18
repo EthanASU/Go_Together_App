@@ -5,14 +5,7 @@ import '../ViewModels/Profile_Personal_View_Model.dart';
 import '../Views/Profile_AddressForm.dart';
 import '../Views/Profile_Contact_Form.dart';
 import '../Views/profile_screen_setup.dart';
-import '../Widgets/address_card.dart';
-import 'package:flutter/services.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
-import '../Views/Profile_AddressForm.dart';
-import '../Views/Profile_Contact_Form.dart';
-import 'profile_screen_setup.dart';
-import '../Widgets/address_card.dart';
-import 'package:flutter/services.dart';
 
 //View for the three tabs in the profile page section (personal, address, contact)
 class ProfileCompletionScreen extends StatelessWidget {
@@ -27,45 +20,49 @@ class ProfileCompletionScreen extends StatelessWidget {
           children: [
             // Done button at top right
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-
                   TextButton(
                     onPressed: () {
-
                       final mainViewModel = context.read<ProfileViewModel>();
-                      final personalViewModel = context.read<ProfilePersonalSetUpViewModel>();
+                      final personalViewModel =
+                          context.read<ProfilePersonalSetUpViewModel>();
 
                       // Explicitly update email and phone in the main view model
-                      mainViewModel.updateEmailAddress(personalViewModel.emailAddress);
-                      mainViewModel.updatePhoneNumber(personalViewModel.phoneNumber);
+                      mainViewModel
+                          .updateEmailAddress(personalViewModel.emailAddress);
+                      mainViewModel
+                          .updatePhoneNumber(personalViewModel.phoneNumber);
                       // Add this code to update addresses
                       if (personalViewModel.addresses.isNotEmpty) {
-                        mainViewModel.updateAddresses(personalViewModel.addresses);
+                        mainViewModel
+                            .updateAddresses(personalViewModel.addresses);
                       }
                       // Add this code to update emergency contacts
                       if (personalViewModel.emergencyContacts.isNotEmpty) {
-                        mainViewModel.updateEmergencyContacts(personalViewModel.emergencyContacts);
+                        mainViewModel.updateEmergencyContacts(
+                            personalViewModel.emergencyContacts);
                       }
 
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ProfileSetUp(),
+                          builder: (context) => const ProfileSetUp(),
                         ),
                       );
                     },
-                      child: const Text(
+                    child: const Text(
                       'Done',
                       style: TextStyle(
-                      color: Color(0xFF8BC541),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Poppins',
+                        color: Color(0xFF8BC541),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
                       ),
-                      ),
+                    ),
                   ),
                 ],
               ),
@@ -97,108 +94,109 @@ class ProfileCompletionScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Email Field
-                    if(viewModel.TabIndex == 0)...[
-                    const Text(
-                      'Email address',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      onChanged: viewModel.updateEmail,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+                    if (viewModel.TabIndex == 0) ...[
+                      const Text(
+                        'Email address',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                          fontFamily: 'Poppins',
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Phone Number Field
-                    const Text(
-                      'Phone number',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      onChanged: viewModel.updatePhone,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    //Select Transportation Method
-                    Row(
-                      children: const [
-                        Text(
-                          'I will ',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Poppins',
+                      const SizedBox(height: 8),
+                      TextField(
+                        onChanged: viewModel.updateEmail,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
                           ),
                         ),
-                        Text(
-                          '(Select all that apply)',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins',
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Phone Number Field
+                      const Text(
+                        'Phone number',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        onChanged: viewModel.updatePhone,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildTransportOption(
-                          context,
-                          'Carpool',
-                          'Assets/Drive_icon.png',
-                          viewModel,
-                        ),
-                        _buildTransportOption(
-                          context,
-                          'Bike',
-                          'Assets/Bike_icon.png',
-                          viewModel,
-                        ),
-                        _buildTransportOption(
-                          context,
-                          'Walk',
-                          'Assets/Pedestrian_icon.png',
-                          viewModel,
-                        ),
-                      ],
-                    ),
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      //Select Transportation Method
+                      const Row(
+                        children: [
+                          Text(
+                            'I will ',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                          Text(
+                            '(Select all that apply)',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildTransportOption(
+                            context,
+                            'Carpool',
+                            'Assets/Drive_icon.png',
+                            viewModel,
+                          ),
+                          _buildTransportOption(
+                            context,
+                            'Bike',
+                            'Assets/Bike_icon.png',
+                            viewModel,
+                          ),
+                          _buildTransportOption(
+                            context,
+                            'Walk',
+                            'Assets/Pedestrian_icon.png',
+                            viewModel,
+                          ),
+                        ],
+                      ),
                       //----------------------Idea 2 -----------------------//
-                      if (viewModel.transportationModes.contains('Carpool')) ...[
+                      if (viewModel.transportationModes
+                          .contains('Carpool')) ...[
                         const SizedBox(height: 30),
-                        Row(
-                          children: const [
+                        const Row(
+                          children: [
                             Text(
                               'Car Information ',
                               style: TextStyle(
@@ -219,15 +217,15 @@ class ProfileCompletionScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         // Display Previously Added Cars
-                          const Text(
-                            'Cars Added',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Poppins',
-                            ),
+                        const Text(
+                          'Cars Added',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Poppins',
                           ),
-                          const SizedBox(height: 16),
+                        ),
+                        const SizedBox(height: 16),
                         // Display added cars
                         if (viewModel.savedCars.isNotEmpty) ...[
                           ListView.builder(
@@ -239,10 +237,13 @@ class ProfileCompletionScreen extends StatelessWidget {
                               return Card(
                                 margin: const EdgeInsets.symmetric(vertical: 8),
                                 child: ListTile(
-                                  title: Text('${car.year} ${car.make} ${car.model}'),
-                                  subtitle: Text('Available Seats: ${car.passengerCount}'),
+                                  title: Text(
+                                      '${car.year} ${car.make} ${car.model}'),
+                                  subtitle: Text(
+                                      'Available Seats: ${car.passengerCount}'),
                                   trailing: IconButton(
-                                    icon: const Icon(Icons.delete, color: Colors.red),
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
                                     onPressed: () {
                                       viewModel.removeCar(index);
                                     },
@@ -252,7 +253,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                             },
                           ),
                           const SizedBox(height: 20),
-                        ]else ...[
+                        ] else ...[
                           Container(
                             alignment: Alignment.center,
                             child: const Text(
@@ -283,18 +284,18 @@ class ProfileCompletionScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 16),
 
-                           DropdownButtonFormField<String>(
-                             value: viewModel.carYear,
-                              decoration: const InputDecoration(
-                                labelText: 'Select',
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
+                              DropdownButtonFormField<String>(
+                                value: viewModel.carYear,
+                                decoration: const InputDecoration(
+                                  labelText: 'Select',
+                                  border: OutlineInputBorder(),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
                                 ),
-                              ),
-                                  items: viewModel.years.map((String year) {
-                                    return DropdownMenuItem<String>(
+                                items: viewModel.years.map((String year) {
+                                  return DropdownMenuItem<String>(
                                     value: year,
                                     child: Text(year),
                                   );
@@ -303,63 +304,63 @@ class ProfileCompletionScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 16),
 
-                            // Make Dropdown
-                            const Text(
-                              'Make',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            DropdownButtonFormField<String>(
-                              value: viewModel.carMake,
-                              decoration: const InputDecoration(
-                                labelText: 'Select',
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
+                              // Make Dropdown
+                              const Text(
+                                'Make',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Poppins',
                                 ),
                               ),
-                              items: viewModel.makes.map((String make) {
-                                return DropdownMenuItem<String>(
-                                  value: make,
-                                  child: Text(make),
-                                );
-                              }).toList(),
-                              onChanged: viewModel.updateCarMake,
-                            ),
-                            const SizedBox(height: 16),
+                              const SizedBox(height: 16),
+                              DropdownButtonFormField<String>(
+                                value: viewModel.carMake,
+                                decoration: const InputDecoration(
+                                  labelText: 'Select',
+                                  border: OutlineInputBorder(),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                items: viewModel.makes.map((String make) {
+                                  return DropdownMenuItem<String>(
+                                    value: make,
+                                    child: Text(make),
+                                  );
+                                }).toList(),
+                                onChanged: viewModel.updateCarMake,
+                              ),
+                              const SizedBox(height: 16),
 
-                          // Model Dropdown
-                            const Text(
-                              'Model',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins',
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            DropdownButtonFormField<String>(
-                              value: viewModel.carModel,
-                              decoration: const InputDecoration(
-                                labelText: 'Select',
-                                border: OutlineInputBorder(),
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
+                              // Model Dropdown
+                              const Text(
+                                'Model',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Poppins',
                                 ),
                               ),
-                              items: viewModel.models.map((String model) {
-                                return DropdownMenuItem<String>(
-                                  value: model,
-                                  child: Text(model),
-                                );
-                              }).toList(),
-                              onChanged: viewModel.updateCarModel,
-                            ),
-                            const SizedBox(height: 16),
+                              const SizedBox(height: 16),
+                              DropdownButtonFormField<String>(
+                                value: viewModel.carModel,
+                                decoration: const InputDecoration(
+                                  labelText: 'Select',
+                                  border: OutlineInputBorder(),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                items: viewModel.models.map((String model) {
+                                  return DropdownMenuItem<String>(
+                                    value: model,
+                                    child: Text(model),
+                                  );
+                                }).toList(),
+                                onChanged: viewModel.updateCarModel,
+                              ),
+                              const SizedBox(height: 16),
 
                               //Seat Count
                               Row(
@@ -376,16 +377,18 @@ class ProfileCompletionScreen extends StatelessWidget {
                                     width: 50,
                                     child: TextField(
                                       keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(0),
-                                            ),
-                                            contentPadding: const EdgeInsets.symmetric(
-                                              horizontal: 12,
-                                              vertical: 8,
-                                            ),
-                                          ),
-                                          onChanged: viewModel.updatePassengerCount,
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(0),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
+                                      ),
+                                      onChanged: viewModel.updatePassengerCount,
                                     ),
                                   ),
                                 ],
@@ -397,17 +400,21 @@ class ProfileCompletionScreen extends StatelessWidget {
                                 child: ElevatedButton.icon(
                                   onPressed: viewModel.isCarInfoComplete
                                       ? () {
-                                    viewModel.addCar();
-                                    viewModel.toggleAddCarForm(); // Hide form after adding
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Car Added!'),
-                                        backgroundColor: Color(0xFF8BC541),
-                                      ),
-                                    );
-                                  }
+                                          viewModel.addCar();
+                                          viewModel
+                                              .toggleAddCarForm(); // Hide form after adding
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Car Added!'),
+                                              backgroundColor:
+                                                  Color(0xFF8BC541),
+                                            ),
+                                          );
+                                        }
                                       : null,
-                                  icon: const Icon(Icons.add, color: Colors.white),
+                                  icon: const Icon(Icons.add,
+                                      color: Colors.white),
                                   label: const Text(
                                     'Add Car',
                                     style: TextStyle(
@@ -442,7 +449,9 @@ class ProfileCompletionScreen extends StatelessWidget {
                               onPressed: () => viewModel.toggleAddCarForm(),
                               icon: const Icon(Icons.add, color: Colors.white),
                               label: Text(
-                                viewModel.savedCars.isEmpty ? 'Add Car' : 'Add Another Car',
+                                viewModel.savedCars.isEmpty
+                                    ? 'Add Car'
+                                    : 'Add Another Car',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -464,7 +473,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                         ],
 
                         const SizedBox(height: 20),
-                    ], // End of Drive section
+                      ], // End of Drive section
                       // Save Button
                       if (!viewModel.isSaved) ...[
                         Padding(
@@ -473,23 +482,26 @@ class ProfileCompletionScreen extends StatelessWidget {
                             child: ElevatedButton(
                               onPressed: viewModel.canSave()
                                   ? () {
-                                // Save the email and phone number
+                                      // Save the email and phone number
 
-                                final mainViewModel = context.read<ProfileViewModel>();
-                                // Update email and phone in the main view model
-                                 mainViewModel.updateEmailAddress(viewModel.emailAddress);
-                                 mainViewModel.updatePhoneNumber(viewModel.phoneNumber);
+                                      final mainViewModel =
+                                          context.read<ProfileViewModel>();
+                                      // Update email and phone in the main view model
+                                      mainViewModel.updateEmailAddress(
+                                          viewModel.emailAddress);
+                                      mainViewModel.updatePhoneNumber(
+                                          viewModel.phoneNumber);
 
-                                 viewModel.savePersonalInfo();
+                                      viewModel.savePersonalInfo();
 
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Saved!'),
-                                      backgroundColor: Color(0xFF8BC541),
-                                    ),
-                                  );
-
-                              }
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Saved!'),
+                                          backgroundColor: Color(0xFF8BC541),
+                                        ),
+                                      );
+                                    }
                                   : null,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: viewModel.canSave()
@@ -516,8 +528,8 @@ class ProfileCompletionScreen extends StatelessWidget {
                           ),
                         ),
                       ] else ...[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20),
                           child: Center(
                             child: Text(
                               'Saved!',
@@ -535,8 +547,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                       const SizedBox(height: 40),
                     ]
                     //------------------ Address Tab Section ------------------//
-                    else if(viewModel.TabIndex == 1)...[
-
+                    else if (viewModel.TabIndex == 1) ...[
                       if (!viewModel.showAddressForm) ...[
                         // Show existing addresses
                         ...viewModel.addresses.map((address) {
@@ -552,10 +563,13 @@ class ProfileCompletionScreen extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        address['isDefault'] ? 'Home (Default)' : address['name'],
+                                        address['isDefault']
+                                            ? 'Home (Default)'
+                                            : address['name'],
                                         style: const TextStyle(
                                           color: Color(0xFF188ECE),
                                           fontSize: 16,
@@ -585,7 +599,8 @@ class ProfileCompletionScreen extends StatelessWidget {
                                 TextButton(
                                   onPressed: () {
                                     // Handle edit
-                                    final index = viewModel.addresses.indexOf(address);
+                                    final index =
+                                        viewModel.addresses.indexOf(address);
                                     viewModel.editAddress(address, index);
                                   },
                                   child: const Text(
@@ -600,7 +615,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                               ],
                             ),
                           );
-                        }).toList(),
+                        }),
 
                         Container(
                           alignment: Alignment.topLeft,
@@ -615,7 +630,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Container(
+                                SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: Stack(
@@ -625,21 +640,23 @@ class ProfileCompletionScreen extends StatelessWidget {
                                       Container(
                                         height: 5,
                                         width: 16,
-                                        color: Color(0xFF188ECE),
+                                        color: const Color(0xFF188ECE),
                                       ),
                                       // Vertical line
                                       Container(
                                         width: 5,
                                         height: 16,
-                                        color: Color(0xFF188ECE),
+                                        color: const Color(0xFF188ECE),
                                       ),
                                     ],
                                   ),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  viewModel.addresses.isEmpty ? 'Add address' : 'Add another address',
-                                  style: TextStyle(
+                                  viewModel.addresses.isEmpty
+                                      ? 'Add address'
+                                      : 'Add another address',
+                                  style: const TextStyle(
                                     color: Color(0xFF188ECE),
                                     fontSize: 16,
                                     fontFamily: 'Poppins',
@@ -651,158 +668,160 @@ class ProfileCompletionScreen extends StatelessWidget {
                           ),
                         )
                       ] else ...[
-                          AddressFormScreen(
-                            viewModel: viewModel,
-                          ),
-
-                        ]
-
+                        AddressFormScreen(
+                          viewModel: viewModel,
+                        ),
+                      ]
                     ]
                     //------------------ End of Address Tab Section ---------------//
 
                     //------------------ Emergency Contact Section ----------------//
-                    else if(viewModel.TabIndex == 2)...[
-                        if (!viewModel.showContactForm) ...[
-                          // Store Created Contacts
-                          ...viewModel.emergencyContacts.map((contact) {
-                            int index = viewModel.emergencyContacts.indexOf(contact) + 1;
-                            return Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(color: Colors.grey.shade300),
-                                ),
+                    else if (viewModel.TabIndex == 2) ...[
+                      if (!viewModel.showContactForm) ...[
+                        // Store Created Contacts
+                        ...viewModel.emergencyContacts.map((contact) {
+                          int index =
+                              viewModel.emergencyContacts.indexOf(contact) + 1;
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(color: Colors.grey.shade300),
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Emergency Contact $index',
-                                        style: const TextStyle(
-                                          color: Color(0xFF188ECE),
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins',
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      Text(
-                                        '${contact['firstName']} ${contact['lastName']} (${contact['relationship']})',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                      Text(
-                                        contact['phone'],
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins',
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      // Handle edit
-                                    },
-                                    child: const Text(
-                                      'Edit',
-                                      style: TextStyle(
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Emergency Contact $index',
+                                      style: const TextStyle(
                                         color: Color(0xFF188ECE),
+                                        fontSize: 16,
+                                        fontFamily: 'Poppins',
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${contact['firstName']} ${contact['lastName']} (${contact['relationship']})',
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontFamily: 'Poppins',
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-
-                          // Add emergency contact button
-                          Container(
-                            alignment: Alignment.topLeft,
-                            padding: const EdgeInsets.only(
-                              left: 10,
-                              top: 10,
-                            ),
-                            child: InkWell(
-                              onTap: () {
-                                viewModel.clearContactForm();
-                                viewModel.toggleContactForm();
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 20,
-                                    height: 20,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        // Horizontal line
-                                        Container(
-                                          height: 5,  // Thickness of the plus
-                                          width: 16,
-                                          color: Color(0xFF188ECE),
-                                        ),
-                                        // Vertical line
-                                        Container(
-                                          width: 5,   // Thickness of the plus
-                                          height: 16,
-                                          color: Color(0xFF188ECE),
-                                        ),
-                                      ],
+                                    Text(
+                                      contact['phone'],
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'Poppins',
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    viewModel.addresses.isEmpty ? 'Add emergency contact' : 'Add emergency contact',
+                                  ],
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // Handle edit
+                                  },
+                                  child: const Text(
+                                    'Edit',
                                     style: TextStyle(
                                       color: Color(0xFF188ECE),
                                       fontSize: 16,
                                       fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+
+                        // Add emergency contact button
+                        Container(
+                          alignment: Alignment.topLeft,
+                          padding: const EdgeInsets.only(
+                            left: 10,
+                            top: 10,
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              viewModel.clearContactForm();
+                              viewModel.toggleContactForm();
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Horizontal line
+                                      Container(
+                                        height: 5, // Thickness of the plus
+                                        width: 16,
+                                        color: const Color(0xFF188ECE),
+                                      ),
+                                      // Vertical line
+                                      Container(
+                                        width: 5, // Thickness of the plus
+                                        height: 16,
+                                        color: const Color(0xFF188ECE),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  viewModel.addresses.isEmpty
+                                      ? 'Add emergency contact'
+                                      : 'Add emergency contact',
+                                  style: const TextStyle(
+                                    color: Color(0xFF188ECE),
+                                    fontSize: 16,
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                        ),
 
-                          // Warning message - only show if no contacts
-                          if (viewModel.emergencyContacts.isEmpty)...[
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.warning, color: Colors.red, size: 24),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      'You must add an emergency contact before scheduling any trips',
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 14,
-                                        fontFamily: 'Poppins',
-                                      ),
+                        // Warning message - only show if no contacts
+                        if (viewModel.emergencyContacts.isEmpty) ...[
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.warning,
+                                    color: Colors.red, size: 24),
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'You must add an emergency contact before scheduling any trips',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 14,
+                                      fontFamily: 'Poppins',
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                        ]
-                        else if (viewModel.emergencyContacts.length == 1) ...[
+                          ),
+                        ] else if (viewModel.emergencyContacts.length == 1) ...[
                           // New warning for single contact
                           Container(
                             padding: const EdgeInsets.all(16),
-                            child: Row(
+                            child: const Row(
                               children: [
-                                Icon(Icons.warning, color: Colors.red, size: 24),
-                                const SizedBox(width: 8),
+                                Icon(Icons.warning,
+                                    color: Colors.red, size: 24),
+                                SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     'We recommend adding at least 2 emergency contacts',
@@ -817,15 +836,14 @@ class ProfileCompletionScreen extends StatelessWidget {
                             ),
                           ),
                         ],
-                      ]
-                        else ...[
-                          // Emergency Contact Form
-                          ContactFormScreen(
-                            viewModel: viewModel,
-                          ),
-                        ],
-                      ]
-                   ],
+                      ] else ...[
+                        // Emergency Contact Form
+                        ContactFormScreen(
+                          viewModel: viewModel,
+                        ),
+                      ],
+                    ]
+                  ],
                 ),
               ),
             ),
@@ -864,7 +882,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                   ),
                   label: 'Chat',
                 ),
-                BottomNavigationBarItem(
+                const BottomNavigationBarItem(
                   icon: Icon(Icons.person),
                   label: 'Profile',
                 ),
@@ -899,11 +917,11 @@ class ProfileCompletionScreen extends StatelessWidget {
   }
 
   Widget _buildTransportOption(
-      BuildContext context,
-      String mode,
-      String iconPath,
-      ProfilePersonalSetUpViewModel viewModel,
-      ) {
+    BuildContext context,
+    String mode,
+    String iconPath,
+    ProfilePersonalSetUpViewModel viewModel,
+  ) {
     final isSelected = viewModel.transportationModes.contains(mode);
 
     return GestureDetector(
@@ -912,9 +930,11 @@ class ProfileCompletionScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isSelected ? Color(0xFF188ECE) : Colors.transparent,  // Blue background when selected
+          color: isSelected
+              ? const Color(0xFF188ECE)
+              : Colors.transparent, // Blue background when selected
           border: Border.all(
-            color: isSelected ? Color(0xFF188ECE) : Colors.grey,
+            color: isSelected ? const Color(0xFF188ECE) : Colors.grey,
             width: 2,
           ),
         ),
@@ -923,7 +943,9 @@ class ProfileCompletionScreen extends StatelessWidget {
           children: [
             ColorFiltered(
               colorFilter: ColorFilter.mode(
-                isSelected ? Colors.white : Colors.black,  // White icon when selected
+                isSelected
+                    ? Colors.white
+                    : Colors.black, // White icon when selected
                 BlendMode.srcIn,
               ),
               child: Image.asset(

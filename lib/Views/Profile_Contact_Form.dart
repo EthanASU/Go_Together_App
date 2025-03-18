@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
-import 'profile_screen_setup.dart';
 
 class ContactFormScreen extends StatelessWidget{
   final ProfilePersonalSetUpViewModel viewModel;
 
   const ContactFormScreen({
-    Key? key,
+    super.key,
     required this.viewModel,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +31,8 @@ class ContactFormScreen extends StatelessWidget{
                   const SizedBox(height: 20),
 
                   // Relationship Dropdown
-                  Row(
-                    children: const [
+                  const Row(
+                    children: [
                       Text(
                         'Relationship ',
                         style: TextStyle(
@@ -80,8 +78,8 @@ class ContactFormScreen extends StatelessWidget{
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: const [
+                            const Row(
+                              children: [
                                 Text(
                                   'First name ',
                                   style: TextStyle(
@@ -119,8 +117,8 @@ class ContactFormScreen extends StatelessWidget{
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: const [
+                            const Row(
+                              children: [
                                 Text(
                                   'Last name ',
                                   style: TextStyle(
@@ -158,8 +156,8 @@ class ContactFormScreen extends StatelessWidget{
                   const SizedBox(height: 16),
 
                   // Phone Number
-                  Row(
-                    children: const [
+                  const Row(
+                    children: [
                       Text(
                         'Phone number ',
                         style: TextStyle(
