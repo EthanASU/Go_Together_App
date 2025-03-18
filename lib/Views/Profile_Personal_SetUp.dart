@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
 import '../Views/Profile_AddressForm.dart';
 import '../Views/Profile_Contact_Form.dart';
-import 'profile_screen_setup.dart';
+import 'Profile_Screen_Setup.dart';
 import '../Widgets/address_card.dart';
 import 'package:flutter/services.dart';
 

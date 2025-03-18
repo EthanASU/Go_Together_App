@@ -1,1 +1,16 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"gotogetherapp-f80b0","appId":"1:628465738680:android:3f029a8294ff329ff2254d","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"gotogetherapp-f80b0","configurations":{"android":"1:628465738680:android:3f029a8294ff329ff2254d","ios":"1:628465738680:ios:4ed4f8272dc4f687f2254d","macos":"1:628465738680:ios:4ed4f8272dc4f687f2254d","web":"1:628465738680:web:83f65142c3ac6c66f2254d","windows":"1:628465738680:web:c176c9f10fb1a6ccf2254d"}}}}}}
+{"flutter":
+{"platforms":
+{"android":
+{"default":
+{"projectId":"gotogetherapp-f80b0","appId":"1:628465738680:android:3f029a8294ff329ff2254d","fileOutput":"android/app/google-services.json"
+}
+},"dart":
+{"lib/firebase_options.dart":
+{"projectId":"gotogetherapp-f80b0","configurations":
+{"android":"1:628465738680:android:3f029a8294ff329ff2254d","ios":"1:628465738680:ios:4ed4f8272dc4f687f2254d","macos":"1:628465738680:ios:4ed4f8272dc4f687f2254d","web":"1:628465738680:web:83f65142c3ac6c66f2254d","windows":"1:628465738680:web:c176c9f10fb1a6ccf2254d"
+}
+}
+}
+}
+}
+}
