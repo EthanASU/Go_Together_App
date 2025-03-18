@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
 import 'Profile_Personal_SetUp.dart';
-// import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../Views/LoginView.dart';
 
 class ProfileSetUp extends StatelessWidget {
   const ProfileSetUp({super.key});
@@ -178,15 +178,27 @@ class ProfileScreenContent extends StatelessWidget {
               //       ),
               //     ),
               ElevatedButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            MyHomePage()), // Navigate back to login screen
+                  );
+                },
+                child: Text("Logout"),
+              ),
+              ElevatedButton(
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                      MaterialPageRoute(
+                    MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
-                    create: (_) => ProfilePersonalSetUpViewModel(),
-                    child: const ProfileCompletionScreen(),
-                  ),
+                        create: (_) => ProfilePersonalSetUpViewModel(),
+                        child: const ProfileCompletionScreen(),
                       ),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -221,7 +233,6 @@ class ProfileScreenContent extends StatelessWidget {
                   ),
                   label: 'Home',
                 ),
-
                 BottomNavigationBarItem(
                   icon: ImageIcon(
                     AssetImage('Assets/Tab_Bar_Calendar_Icon.png'),
