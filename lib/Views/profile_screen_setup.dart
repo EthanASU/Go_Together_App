@@ -141,42 +141,16 @@ class ProfileScreenContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     if (viewModel.currentStep < viewModel.totalSteps - 1) {
-              //       viewModel.nextStep();
-              //     } else {
-              //       // On the final step, navigate to profile completion
-              //       Navigator.of(context).pushReplacement(
-              //         MaterialPageRoute(
-              //           builder: (context) => const ProfileCompletionScreen(),
-              //         ),
-              //       );
-              //     }
-              // //Go Button
-              //     },
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor: const Color(0xFF8BC541),
-              //         padding: const EdgeInsets.symmetric(
-              //           horizontal: 40,
-              //           vertical: 7,
-              //         ),
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(20),
-              //         ),
-              //       ),
-              //       child:  Text(
-              //         viewModel.currentStep < viewModel.totalSteps - 1
-              //             ? ''
-              //             : 'Go',
-              //         style: const TextStyle(
-              //           fontFamily: 'Poppins',
-              //           fontSize: 18,
-              //           fontWeight: FontWeight.bold,
-              //           color: Colors.white,
-              //         ),
-              //       ),
-              //     ),
+              ElevatedButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyHomePage()), // Navigate back to login screen
+                  );
+                },
+                child: Text("Logout"),
+              ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushReplacement(
@@ -255,3 +229,4 @@ class ProfileScreenContent extends StatelessWidget {
     );
   }
 }
+

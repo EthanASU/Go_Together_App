@@ -626,7 +626,7 @@ class ProfileCompletionScreen extends StatelessWidget {
 
                     ]
                     //------------------ End of Address Tab Section ---------------//
-                    
+
                     //------------------ Emergency Contact Section ----------------//
                     else if(viewModel.TabIndex == 2)...[
                         if (!viewModel.showContactForm) ...[
@@ -797,7 +797,7 @@ class ProfileCompletionScreen extends StatelessWidget {
               ),
             ),
             //------------------ End of Emergency Tab Section ---------------//
-            
+
             // Bottom Navigation Bar
             BottomNavigationBar(
               currentIndex: 4,
@@ -843,7 +843,6 @@ class ProfileCompletionScreen extends StatelessWidget {
     );
   }
 
-  //---------------- Widgets ----------------//
   Widget _buildTab(BuildContext context, String title, int index) {
     final viewModel = context.watch<ProfilePersonalSetUpViewModel>();
     final isSelected = viewModel.TabIndex == index;

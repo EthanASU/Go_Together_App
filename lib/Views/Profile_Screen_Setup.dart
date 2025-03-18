@@ -1,10 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
 import 'Profile_Personal_SetUp.dart';
 // import 'package:google_fonts/google_fonts.dart';
+// Firebase Imports
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileSetUp extends StatelessWidget {
   const ProfileSetUp({super.key});
@@ -141,52 +143,28 @@ class ProfileScreenContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     if (viewModel.currentStep < viewModel.totalSteps - 1) {
-              //       viewModel.nextStep();
-              //     } else {
-              //       // On the final step, navigate to profile completion
-              //       Navigator.of(context).pushReplacement(
-              //         MaterialPageRoute(
-              //           builder: (context) => const ProfileCompletionScreen(),
-              //         ),
-              //       );
-              //     }
-              // //Go Button
-              //     },
-              //       style: ElevatedButton.styleFrom(
-              //         backgroundColor: const Color(0xFF8BC541),
-              //         padding: const EdgeInsets.symmetric(
-              //           horizontal: 40,
-              //           vertical: 7,
-              //         ),
-              //         shape: RoundedRectangleBorder(
-              //           borderRadius: BorderRadius.circular(20),
-              //         ),
-              //       ),
-              //       child:  Text(
-              //         viewModel.currentStep < viewModel.totalSteps - 1
-              //             ? ''
-              //             : 'Go',
-              //         style: const TextStyle(
-              //           fontFamily: 'Poppins',
-              //           fontSize: 18,
-              //           fontWeight: FontWeight.bold,
-              //           color: Colors.white,
-              //         ),
-              //       ),
-              //     ),
+              ElevatedButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            MyHomePage()), // Navigate back to login screen
+                  );
+                },
+                child: Text("Logout"),
+              ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                      MaterialPageRoute(
+                    MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
-                    create: (_) => ProfilePersonalSetUpViewModel(),
-                    child: const ProfileCompletionScreen(),
-                  ),
+                        create: (_) => ProfilePersonalSetUpViewModel(),
+                        child: const ProfileCompletionScreen(),
                       ),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -221,7 +199,6 @@ class ProfileScreenContent extends StatelessWidget {
                   ),
                   label: 'Home',
                 ),
-
                 BottomNavigationBarItem(
                   icon: ImageIcon(
                     AssetImage('Assets/Tab_Bar_Calendar_Icon.png'),
