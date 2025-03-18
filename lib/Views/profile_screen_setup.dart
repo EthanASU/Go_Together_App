@@ -1,10 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
 import 'Profile_Personal_SetUp.dart';
 // import 'package:google_fonts/google_fonts.dart';
+// Firebase Imports
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileSetUp extends StatelessWidget {
   const ProfileSetUp({super.key});
@@ -146,7 +148,9 @@ class ProfileScreenContent extends StatelessWidget {
                   await FirebaseAuth.instance.signOut();
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => MyHomePage()), // Navigate back to login screen
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            MyHomePage()), // Navigate back to login screen
                   );
                 },
                 child: Text("Logout"),
@@ -155,12 +159,12 @@ class ProfileScreenContent extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                      MaterialPageRoute(
+                    MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
-                    create: (_) => ProfilePersonalSetUpViewModel(),
-                    child: const ProfileCompletionScreen(),
-                  ),
+                        create: (_) => ProfilePersonalSetUpViewModel(),
+                        child: const ProfileCompletionScreen(),
                       ),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -195,7 +199,6 @@ class ProfileScreenContent extends StatelessWidget {
                   ),
                   label: 'Home',
                 ),
-
                 BottomNavigationBarItem(
                   icon: ImageIcon(
                     AssetImage('Assets/Tab_Bar_Calendar_Icon.png'),
@@ -229,4 +232,3 @@ class ProfileScreenContent extends StatelessWidget {
     );
   }
 }
-

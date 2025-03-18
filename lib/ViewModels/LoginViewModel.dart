@@ -15,6 +15,7 @@ class LoginViewModel extends ChangeNotifier {
   bool _isLoading = false;
   String get studentId => _studentId;
   String get password => _password;
+  String get errorMessage => _errorMessage;
 
   bool get isLoading => _isLoading;
   bool get canSignIn => _studentId.isNotEmpty && _password.isNotEmpty;
