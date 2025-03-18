@@ -1,49 +1,68 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../Views/Profile_Screen_Setup.dart';
 
 class LoginViewModel extends ChangeNotifier {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? currentUser = null;
 
-  String _studentId = '';
-  String _password = '';
-  bool _isLoading = false;
-  String get studentId => _studentId;
-  String get password => _password;
-
-  bool get isLoading => _isLoading;
-  bool get canSignIn => _studentId.isNotEmpty && _password.isNotEmpty;
+  String studentIdOrEmail = '';
+  String password = '';
+  bool isLoading = false;
+  String errorMessage = '';
 
   void updateStudentId(String value) {
-    _studentId = value;
+    studentIdOrEmail = value;
     notifyListeners();
   }
 
   void updatePassword(String value) {
-    _password = value;
+    password = value;
     notifyListeners();
   }
 
-  Future<void> login() async {
-    if (!canSignIn) return;
+  bool get canSignIn => studentIdOrEmail.isNotEmpty && password.isNotEmpty;
 
-    _isLoading = true;
+  // This login function will handle email & student ID
+  Future<void> login(BuildContext context) async {
+    isLoading = true;
     notifyListeners();
 
     try {
-      // Authenticate user with credentials
-      final userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: _studentId, password: _password);
+      String email = studentIdOrEmail;
 
-      // TODO: Navigate user to the profile page and load their information
-      currentUser = userCredential.user;
-      print("Login successful!");
+      // If the input isn't and email, assume it's a Student ID and fetch corresponding email from Firestore
+      if (!studentIdOrEmail.contains('@')) {
+        QuerySnapshot querySnapshot = await _firestore
+            .collection('users')
+            .where('studentNum', isEqualTo: studentIdOrEmail)
+            .limit(1)
+            .get();
+
+        if (querySnapshot.docs.isEmpty) {
+          throw Exception("No account found with this Student ID.");
+        }
+
+        email = querySnapshot.docs.first['email']; // Get the email from Firestore
+      }
+
+      // Firebase Authentication (Email & Password)
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      print("Login successful! User ID: ${userCredential.user?.uid}");
+      Navigator.pushReplacementNamed(context, '/profile');
+
     } catch (e) {
       print("Login failed: $e");
-      // Show an error message to the user
-    } finally {
-      _isLoading = false;
+      errorMessage = "Invalid credentials. Please try again.";
       notifyListeners();
     }
+    isLoading = false;
+    notifyListeners();
   }
 }

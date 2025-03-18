@@ -3,6 +3,7 @@ import 'package:go_together_app/ViewModels/Create_Account_Flow_View_Model.dart';
 import 'package:go_together_app/Views/Create_Account_Flow.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/LoginViewModel.dart';
+import 'Profile_Screen_Setup.dart';
 
 void main() {
   runApp(
@@ -81,11 +82,24 @@ class MyHomePage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20),
+                  if (viewModel.errorMessage.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      child: Text(
+                        viewModel.errorMessage,
+                        style: TextStyle(color: Colors.red, fontSize: 14),
+                      ),
+                    ),
+
                   if (viewModel.isLoading)
                     CircularProgressIndicator()
                   else
                     ElevatedButton(
-                      onPressed: viewModel.canSignIn ? viewModel.login : null,
+                      onPressed: () {
+                        if (viewModel.canSignIn) {
+                          viewModel.login(context);
+                        }
+                      },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: viewModel.canSignIn ? Colors.green : Colors.transparent,
@@ -114,10 +128,10 @@ class MyHomePage extends StatelessWidget {
                       );
                     },
                     child: Text(
-                      "Don't have an account? Create an account here!",
-                      style: TextStyle(
-                        fontSize: 16,
-                      )
+                        "Don't have an account? Create an account here!",
+                        style: TextStyle(
+                          fontSize: 16,
+                        )
                     ),
                   ),
                 ],

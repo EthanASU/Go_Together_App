@@ -4,6 +4,12 @@ import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
 import '../Views/Profile_AddressForm.dart';
 import '../Views/Profile_Contact_Form.dart';
+import '../Views/profile_screen_setup.dart';
+import '../Widgets/address_card.dart';
+import 'package:flutter/services.dart';
+import '../ViewModels/Profile_Screen_View_Model.dart';
+import '../Views/Profile_AddressForm.dart';
+import '../Views/Profile_Contact_Form.dart';
 import 'profile_screen_setup.dart';
 import '../Widgets/address_card.dart';
 import 'package:flutter/services.dart';
@@ -25,24 +31,41 @@ class ProfileCompletionScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+
                   TextButton(
                     onPressed: () {
+
+                      final mainViewModel = context.read<ProfileViewModel>();
+                      final personalViewModel = context.read<ProfilePersonalSetUpViewModel>();
+
+                      // Explicitly update email and phone in the main view model
+                      mainViewModel.updateEmailAddress(personalViewModel.emailAddress);
+                      mainViewModel.updatePhoneNumber(personalViewModel.phoneNumber);
+                      // Add this code to update addresses
+                      if (personalViewModel.addresses.isNotEmpty) {
+                        mainViewModel.updateAddresses(personalViewModel.addresses);
+                      }
+                      // Add this code to update emergency contacts
+                      if (personalViewModel.emergencyContacts.isNotEmpty) {
+                        mainViewModel.updateEmergencyContacts(personalViewModel.emergencyContacts);
+                      }
+
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ProfileSetUp(), // Your initial profile page
+                          builder: (context) => ProfileSetUp(),
                         ),
                       );
                     },
-                    child: const Text(
+                      child: const Text(
                       'Done',
                       style: TextStyle(
-                        color: Color(0xFF8BC541),
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
+                      color: Color(0xFF8BC541),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Poppins',
                       ),
-                    ),
+                      ),
                   ),
                 ],
               ),
@@ -147,7 +170,6 @@ class ProfileCompletionScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -442,25 +464,35 @@ class ProfileCompletionScreen extends StatelessWidget {
                         ],
 
                         const SizedBox(height: 20),
+                    ], // End of Drive section
                       // Save Button
                       if (!viewModel.isSaved) ...[
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           child: Center(
                             child: ElevatedButton(
-                              onPressed: viewModel.savedCars.isNotEmpty
+                              onPressed: viewModel.canSave()
                                   ? () {
-                                viewModel.saveCarInformation();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Saved!'),
-                                    backgroundColor: Color(0xFF8BC541),
-                                  ),
-                                );
+                                // Save the email and phone number
+
+                                final mainViewModel = context.read<ProfileViewModel>();
+                                // Update email and phone in the main view model
+                                 mainViewModel.updateEmailAddress(viewModel.emailAddress);
+                                 mainViewModel.updatePhoneNumber(viewModel.phoneNumber);
+
+                                 viewModel.savePersonalInfo();
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Saved!'),
+                                      backgroundColor: Color(0xFF8BC541),
+                                    ),
+                                  );
+
                               }
                                   : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: viewModel.savedCars.isNotEmpty
+                                backgroundColor: viewModel.canSave()
                                     ? const Color(0xFF8BC541)
                                     : Colors.grey,
                                 padding: const EdgeInsets.symmetric(
@@ -501,7 +533,6 @@ class ProfileCompletionScreen extends StatelessWidget {
                       ],
 
                       const SizedBox(height: 40),
-                    ] // End of Drive section
                     ]
                     //------------------ Address Tab Section ------------------//
                     else if(viewModel.TabIndex == 1)...[
@@ -554,6 +585,8 @@ class ProfileCompletionScreen extends StatelessWidget {
                                 TextButton(
                                   onPressed: () {
                                     // Handle edit
+                                    final index = viewModel.addresses.indexOf(address);
+                                    viewModel.editAddress(address, index);
                                   },
                                   child: const Text(
                                     'Edit',
@@ -626,7 +659,7 @@ class ProfileCompletionScreen extends StatelessWidget {
 
                     ]
                     //------------------ End of Address Tab Section ---------------//
-                    
+
                     //------------------ Emergency Contact Section ----------------//
                     else if(viewModel.TabIndex == 2)...[
                         if (!viewModel.showContactForm) ...[
@@ -797,7 +830,7 @@ class ProfileCompletionScreen extends StatelessWidget {
               ),
             ),
             //------------------ End of Emergency Tab Section ---------------//
-            
+
             // Bottom Navigation Bar
             BottomNavigationBar(
               currentIndex: 4,
