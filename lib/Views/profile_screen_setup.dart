@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
+import '../Views/LoginView.dart';
 import 'Profile_Personal_SetUp.dart';
 // import 'package:google_fonts/google_fonts.dart';
 // Firebase Imports
