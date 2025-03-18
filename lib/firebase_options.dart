@@ -3,6 +3,7 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
+
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
 /// Example:
@@ -30,7 +31,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
-              'you can reconfigure this by running the FlutterFire CLI again.',
+          'you can reconfigure this by running the FlutterFire CLI again.',
         );
       default:
         throw UnsupportedError(
@@ -38,6 +39,7 @@ class DefaultFirebaseOptions {
         );
     }
   }
+
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyAKzyUubXg62iXqAeujmjvJSlv0V8qeqGg',
     appId: '1:628465738680:web:83f65142c3ac6c66f2254d',
@@ -47,6 +49,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'gotogetherapp-f80b0.firebasestorage.app',
     measurementId: 'G-8VNVDYJ7SK',
   );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDpkAmTGYN_PAGV9KIfqBGyNAQ66Gbzl0s',
     appId: '1:628465738680:android:3f029a8294ff329ff2254d',
@@ -54,6 +57,7 @@ class DefaultFirebaseOptions {
     projectId: 'gotogetherapp-f80b0',
     storageBucket: 'gotogetherapp-f80b0.firebasestorage.app',
   );
+
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBcMaLu4zYVQ-rqRzqLWciiKfBjkF3oInQ',
     appId: '1:628465738680:ios:4ed4f8272dc4f687f2254d',
@@ -62,6 +66,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'gotogetherapp-f80b0.firebasestorage.app',
     iosBundleId: 'com.ethanjrivera.goTogetherApp',
   );
+
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBcMaLu4zYVQ-rqRzqLWciiKfBjkF3oInQ',
     appId: '1:628465738680:ios:4ed4f8272dc4f687f2254d',
@@ -70,6 +75,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'gotogetherapp-f80b0.firebasestorage.app',
     iosBundleId: 'com.ethanjrivera.goTogetherApp',
   );
+
   static const FirebaseOptions windows = FirebaseOptions(
     apiKey: 'AIzaSyAKzyUubXg62iXqAeujmjvJSlv0V8qeqGg',
     appId: '1:628465738680:web:c176c9f10fb1a6ccf2254d',

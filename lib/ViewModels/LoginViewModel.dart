@@ -1,43 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Views/Profile_Screen_Setup.dart';
+// Firebase Imports
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   User? currentUser = null;
 
-  String studentIdOrEmail = '';
-  String password = '';
-  bool isLoading = false;
-  String errorMessage = '';
+  String _studentId = '';
+  String _password = '';
+  String _errorMessage = '';
+  bool _isLoading = false;
+  String get studentId => _studentId;
+  String get password => _password;
+  String get errorMessage => _errorMessage;
+
+  bool get isLoading => _isLoading;
+  bool get canSignIn => _studentId.isNotEmpty && _password.isNotEmpty;
 
   void updateStudentId(String value) {
-    studentIdOrEmail = value;
+    _studentId = value;
     notifyListeners();
   }
 
   void updatePassword(String value) {
-    password = value;
+    _password = value;
     notifyListeners();
   }
 
-  bool get canSignIn => studentIdOrEmail.isNotEmpty && password.isNotEmpty;
-
-  // This login function will handle email & student ID
   Future<void> login(BuildContext context) async {
-    isLoading = true;
+    if (!canSignIn) return;
+
+    _isLoading = true;
     notifyListeners();
 
     try {
-      String email = studentIdOrEmail;
+      String email = studentId;
 
       // If the input isn't and email, assume it's a Student ID and fetch corresponding email from Firestore
-      if (!studentIdOrEmail.contains('@')) {
+      if (!studentId.contains('@')) {
         QuerySnapshot querySnapshot = await _firestore
             .collection('users')
-            .where('studentNum', isEqualTo: studentIdOrEmail)
+            .where('studentNum', isEqualTo: studentId)
             .limit(1)
             .get();
 
@@ -45,7 +51,8 @@ class LoginViewModel extends ChangeNotifier {
           throw Exception("No account found with this Student ID.");
         }
 
-        email = querySnapshot.docs.first['email']; // Get the email from Firestore
+        email =
+            querySnapshot.docs.first['email']; // Get the email from Firestore
       }
 
       // Firebase Authentication (Email & Password)
@@ -56,13 +63,12 @@ class LoginViewModel extends ChangeNotifier {
 
       print("Login successful! User ID: ${userCredential.user?.uid}");
       Navigator.pushReplacementNamed(context, '/profile');
-
     } catch (e) {
       print("Login failed: $e");
-      errorMessage = "Invalid credentials. Please try again.";
+      _errorMessage = "Invalid credentials. Please try again.";
       notifyListeners();
     }
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
   }
 }

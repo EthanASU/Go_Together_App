@@ -4,15 +4,18 @@ import 'ViewModels/LoginViewModel.dart'; // Adjust the path as per your project 
 import 'Views/LoginView.dart'; // Adjust the path for your login page
 import 'Views/Splash_Screen.dart';
 import 'Views/Profile_Screen_Setup.dart';
+import 'Views/Profile_Personal_SetUp.dart';
 // Firebase Imports
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 
-void main() async {
+Future<void> main() async {
   // Initialize Firebase
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(
     MultiProvider(
