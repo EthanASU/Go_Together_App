@@ -15,6 +15,7 @@ class ProfileCompletionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ProfilePersonalSetUpViewModel>();
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -891,6 +892,7 @@ class ProfileCompletionScreen extends StatelessWidget {
     String iconPath,
     ProfilePersonalSetUpViewModel viewModel,
   ) {
+    viewModel.fetchTransportationPrefsFromFirebase();
     final isSelected = viewModel.transportationModes.contains(mode);
 
     return GestureDetector(

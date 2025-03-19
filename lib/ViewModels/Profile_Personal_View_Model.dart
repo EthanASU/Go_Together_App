@@ -53,6 +53,21 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Get a simple boolean value from a transportation mode entered
+  void setTransportationMode(String mode, bool toggle) {
+    if (!toggle) {
+      // if false
+      if (transportation_Modes.contains(mode)) {
+        transportation_Modes.remove(mode); // Remove Mode
+      }
+    } else {
+      // if true
+      if (!transportation_Modes.contains(mode)) {
+        transportation_Modes.add(mode); // Add Mode
+      }
+    }
+  }
+
   //updating selected tab
   void setSelectedTab(int index) {
     if (tab_Index == 1 && _showAddressForm && index != 1) {
@@ -521,6 +536,36 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
         .set(data, SetOptions(merge: true)); // Set data in existing doc
 
     print("User transportation prefs $type stored in db as $setting");
+  }
+
+  Future<void> fetchTransportationPrefsFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('transPrefs')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          final data = userDoc.data() as Map<String, dynamic>;
+
+          bool bike = data['Bike'] ?? false; // Default to false if missing
+          setTransportationMode('Bike', bike);
+
+          bool carpool =
+              data['Carpool'] ?? false; // Default to false if missing
+          setTransportationMode('Carpool', carpool);
+
+          bool walk = data['Walk'] ?? false; // Default to false if missing
+          setTransportationMode('Walk', walk);
+
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
   }
 }
 
