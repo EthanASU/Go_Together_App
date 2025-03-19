@@ -350,6 +350,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     }
 
     addresses.add(newAddress);
+    addAddressToFirebase(newAddress);
     clearAddressForm();
     _showAddressForm = false;
     notifyListeners();
@@ -566,6 +567,33 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     } catch (e) {
       print("Error fetching user data: $e");
     }
+  }
+
+  Future<void> addAddressToFirebase(Map<String, dynamic> addressInfo) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // Generate and store new Address ID
+    String randomId =
+        firestoreDB.collection("users").doc().id; // Generate random ID
+    // Store pref as a pair to parse database
+    final data = {"address1": randomId};
+
+    // Store in database
+    await firestoreDB
+        .collection('users') // Document "transPrefs
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    // Generate and Store Address with ID
+    await firestoreDB.collection('addresses').doc(randomId).set({
+      'streetAddress': addressInfo['streetAddress'],
+      'aptSuite': addressInfo['aptSuite'],
+      'city': addressInfo['city'],
+      'state': addressInfo['state'],
+      'zipCode': addressInfo['zipCode'],
+      'name': addressInfo['name'],
+      'isDefault': addressInfo['isDefault']
+    });
   }
 }
 
