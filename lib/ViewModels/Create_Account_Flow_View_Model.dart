@@ -270,7 +270,10 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
         'email': emailAddress,
         'phoneNumber': phoneNumber,
         'studentID': studentNumber,
-        'school': _selectedSchool
+        'school': _selectedSchool,
+        'address1': "Null",
+        'address2': "Null",
+        'address3': "Null"
       });
 
       // Initialize Transportation Prefs in DB; To be updated in Profile Personal View Model
@@ -278,9 +281,9 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
           .collection('transPrefs')
           .doc(userCredential.user!.uid)
           .set({
-        'bike': false,
-        'drive': false,
-        'walk': false,
+        'Bike': false,
+        'Carpool': false,
+        'Walk': false,
       });
 
       return true; // Account created

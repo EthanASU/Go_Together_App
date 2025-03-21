@@ -15,6 +15,7 @@ class ProfileCompletionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<ProfilePersonalSetUpViewModel>();
+
     return Scaffold(
       body: SafeArea(
         child: Column(

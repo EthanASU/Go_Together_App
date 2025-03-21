@@ -5,9 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 //View Model for the three tabs in the profile setup section (Personal/Address/Contact)
 class ProfilePersonalSetUpViewModel extends ChangeNotifier {
-  // Firestore Reference
-  final firestoreDB =
+  ProfilePersonalSetUpViewModel() {
+    fetchTransportationPrefsFromFirebase(); // Update transportation preferences on frontend from backend
+    fetchAddressesFromFirebase(); // Update address information on frontend from backend
+    fetchContactsFromFirebase(); // Update contact information on frontend from backend
+  }
+
+  // Firestore Reference and settings
+  final _firestoreDB =
       FirebaseFirestore.instance; // Reference to the Firestore Database
+  final _numOfAllowedAddresses = 5;
+  final _numOfAllowedContacts = 3;
 
   // Tab navigation selection
   int tab_Index = 0;
@@ -30,14 +38,14 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
   //update email
   void updateEmail(String email) {
     email_Address = email;
-    updateEmailOnFirebase(email); // Store info in db
+    storeEmailOnFirebase(email); // Store info in db
     notifyListeners();
   }
 
   //update phone number
   void updatePhone(String phone) {
     phone_Number = phone;
-    updatePhoneNumberOnFirebase(phone); // Store info in db
+    storePhoneNumberOnFirebase(phone); // Store info in db
     notifyListeners();
   }
 
@@ -45,12 +53,27 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
   void toggleTransportationMode(String mode) {
     if (transportation_Modes.contains(mode)) {
       transportation_Modes.remove(mode);
-      updateTransportationInfoOnFirebase(mode, false); // Store info in db
+      storeTransportationPrefsOnFirebase(mode, false); // Store info in db
     } else {
       transportation_Modes.add(mode);
-      updateTransportationInfoOnFirebase(mode, true); // Store info in db
+      storeTransportationPrefsOnFirebase(mode, true); // Store info in db
     }
     notifyListeners();
+  }
+
+  // Get a simple boolean value from a transportation mode entered
+  void setTransportationMode(String mode, bool toggle) {
+    if (!toggle) {
+      // if false
+      if (transportation_Modes.contains(mode)) {
+        transportation_Modes.remove(mode); // Remove Mode
+      }
+    } else {
+      // if true
+      if (!transportation_Modes.contains(mode)) {
+        transportation_Modes.add(mode); // Add Mode
+      }
+    }
   }
 
   //updating selected tab
@@ -315,14 +338,22 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveAddress() {
+  // TODO: Prompt something on the user's screen when they exceed the address amount;
+  //  I made the function return a bool on whether or not they successfully added an address to make the implementation easier.
+  bool saveAddress() {
+    if (addresses.length > (_numOfAllowedAddresses - 1)) {
+      print(
+          "Exceeded the number of allowed addresses for this account. Address was not added");
+      return false;
+    }
+
     final newAddress = {
       'streetAddress': _streetAddress,
       'aptSuite': _aptSuite,
       'city': _city,
       'state': _state,
       'zipCode': _zipCode,
-      'name': _addressName.isEmpty ? 'Home' : _addressName,
+      'name': _addressName.isEmpty ? 'Saved Address' : _addressName,
       'isDefault': _isDefaultAddress,
     };
 
@@ -335,9 +366,11 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     }
 
     addresses.add(newAddress);
+    storeAddressOnFirebase(newAddress);
     clearAddressForm();
     _showAddressForm = false;
     notifyListeners();
+    return true;
   }
 
   void clearAddressForm() {
@@ -409,7 +442,15 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveEmergencyContact() {
+  // TODO: Prompt something on the user's screen when they exceed the address amount;
+  //  I made the function return a bool on whether or not they successfully added an address to make the implementation easier.
+  bool saveEmergencyContact() {
+    if (emergencyContacts.length > (_numOfAllowedContacts - 1)) {
+      print(
+          "Exceeded the number of allowed emergency contacts for this account. Contact was not added");
+      return false;
+    }
+
     final newContact = {
       'firstName': _contactFirstName,
       'lastName': _contactLastName,
@@ -418,8 +459,10 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     };
     emergencyContacts.add(newContact);
     clearContactForm();
+    storeContactOnFirebase(newContact);
     _showContactForm = false;
     notifyListeners();
+    return true;
   }
 
   void clearContactForm() {
@@ -473,54 +516,268 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  //--------------- Fire Store Methods ---------------//
-  /// Update Phone Number in database
-  Future<void> updatePhoneNumberOnFirebase(String phoneNum) async {
-    User? user = FirebaseAuth.instance.currentUser;
+  //--------------- Firebase ---------------//
+  /// Store Phone Number in Firebase
+  Future<void> storePhoneNumberOnFirebase(String phoneNum) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
 
-    // Store email as a pair to parse database
+    // Store phone as a pair to parse database
     final data = {"phoneNumber": phoneNum};
 
     // Store in database
-    await firestoreDB
-        .collection('users') // Document "transPrefs
+    await _firestoreDB
+        .collection('users') // Document "users"
         .doc(user!.uid) // User UID
         .set(data, SetOptions(merge: true)); // Set data in existing doc
 
     print("User phone number stored in db as $phoneNum");
   }
 
-  /// Update Email in database
-  Future<void> updateEmailOnFirebase(String email) async {
-    User? user = FirebaseAuth.instance.currentUser;
+  /// Store Email in Firebase
+  Future<void> storeEmailOnFirebase(String email) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
 
     // Store email as a pair to parse database
     final data = {"email": email};
 
     // Store in database
-    await firestoreDB
-        .collection('users') // Document "transPrefs
+    await _firestoreDB
+        .collection('users') // Document "users"
         .doc(user!.uid) // User UID
         .set(data, SetOptions(merge: true)); // Set data in existing doc
 
-    print("User email number stored in db as $email");
+    print("User email stored in db as $email");
   }
 
-  /// Update transportation prefs in database
-  Future<void> updateTransportationInfoOnFirebase(
+  /// Store transportation prefs in Firebase
+  Future<void> storeTransportationPrefsOnFirebase(
       String type, bool setting) async {
-    User? user = FirebaseAuth.instance.currentUser;
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
 
     // Store pref as a pair to parse database
     final data = {type: setting};
 
     // Store in database
-    await firestoreDB
+    await _firestoreDB
         .collection('transPrefs') // Document "transPrefs
         .doc(user!.uid) // User UID
         .set(data, SetOptions(merge: true)); // Set data in existing doc
 
     print("User transportation prefs $type stored in db as $setting");
+  }
+
+  /// Store a user address on Firebase
+  Future<void> storeAddressOnFirebase(Map<String, dynamic> addressInfo) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
+
+    // Generate and store new Address ID
+    String randomId =
+        _firestoreDB.collection("users").doc().id; // Generate random ID
+
+    // Store the address in the right user data entry
+    int addressNum = addresses.length;
+    String addressKey = "address" + addressNum.toString();
+
+    // Store address as a pair to parse database
+    final data = {addressKey: randomId};
+
+    // Store in database
+    await _firestoreDB
+        .collection('users') // Document "users"
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    // Generate and store address with ID
+    await _firestoreDB.collection('addresses').doc(randomId).set({
+      'streetAddress': addressInfo['streetAddress'],
+      'aptSuite': addressInfo['aptSuite'],
+      'city': addressInfo['city'],
+      'state': addressInfo['state'],
+      'zipCode': addressInfo['zipCode'],
+      'name': addressInfo['name'],
+      'isDefault': addressInfo['isDefault']
+    });
+
+    print("User address $addressKey stored in db as $randomId");
+  }
+
+  /// Store a user contact on Firebase
+  Future<void> storeContactOnFirebase(Map<String, dynamic> contactInfo) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
+
+    // Generate and store new Contact ID
+    String randomId =
+        _firestoreDB.collection("users").doc().id; // Generate random ID
+
+    // Store the contact in the right user data entry
+    int contactNum = emergencyContacts.length;
+    String contactKey = "contact" + contactNum.toString();
+
+    // Store contact as a pair to parse database
+    final data = {contactKey: randomId};
+
+    // Store in database
+    await _firestoreDB
+        .collection('users') // Document "users"
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    // Generate and store contact with ID
+    await _firestoreDB.collection('contacts').doc(randomId).set({
+      'firstName': contactInfo['firstName'],
+      'lastName': contactInfo['lastName'],
+      'phone': contactInfo['phone'],
+      'relationship': contactInfo['relationship']
+    });
+
+    print("User contact $contactKey stored in db as $randomId");
+  }
+
+  /// Fetch transportation prefs from Firebase
+  Future<void> fetchTransportationPrefsFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser; // User Reference
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('transPrefs')
+            .doc(user.uid)
+            .get();
+
+        // Check if a document exists for the user's transportation prefs
+        if (userDoc.exists && userDoc.data() != null) {
+          final data = userDoc.data() as Map<String, dynamic>;
+
+          bool bike = data['Bike'] ?? false; // Default to false if missing
+          setTransportationMode('Bike', bike);
+
+          bool carpool =
+              data['Carpool'] ?? false; // Default to false if missing
+          setTransportationMode('Carpool', carpool);
+
+          bool walk = data['Walk'] ?? false; // Default to false if missing
+          setTransportationMode('Walk', walk);
+
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
+  }
+
+  /// Fetch all user addresses from Firebase
+  Future<void> fetchAddressesFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser; // User Reference
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance // Get the User's data
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          // Check if the user exists
+          final userData = userDoc.data() as Map<String, dynamic>;
+
+          // Iterate through address IDs and update them sequentially in the "Address" tab
+          var addressIDs = List<String>.filled(_numOfAllowedAddresses, "Null");
+          for (int i = 0; i < (addressIDs.length + 1); i++) {
+            String addressKey = "address" + i.toString();
+            String addressID = // Get the addressID for each address
+                userData[addressKey] ?? "Null"; // Default to Null if missing
+
+            if (addressID != "Null") {
+              // Check if the ID is valid
+              // Update Address
+              DocumentSnapshot addressDoc =
+                  await FirebaseFirestore.instance // Get the address's data
+                      .collection('addresses')
+                      .doc(addressID)
+                      .get();
+
+              if (addressDoc.exists && addressDoc.data() != null) {
+                // Check if the user exists
+                final addressData = addressDoc.data() as Map<String, dynamic>;
+
+                // Add address to list of addresses
+                final address = {
+                  'streetAddress':
+                      addressData['streetAddress'] ?? "Unknown_Street",
+                  'aptSuite': addressData['aptSuite'] ?? "",
+                  'city': addressData['city'] ?? "Unknown_City",
+                  'state': addressData['state'] ?? "Unknown_State",
+                  'zipCode': addressData['zipCode'] ?? "Unknown_Zip",
+                  'name': addressData['name'] ?? "Saved Address",
+                  'isDefault': addressData['isDefault'] ?? false
+                };
+
+                addresses.add(address);
+              }
+            }
+          }
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      print("Error fetching user address data: $e");
+    }
+  }
+
+  /// Fetch all user contacts from Firebase
+  Future<void> fetchContactsFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser; // User Reference
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance // Get the User's data
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          // Check if the user exists
+          final userData = userDoc.data() as Map<String, dynamic>;
+
+          // Iterate through contact IDs and update them sequentially in the "Contact" tab
+          var contactIDs = List<String>.filled(_numOfAllowedContacts, "Null");
+          for (int i = 0; i < (contactIDs.length + 1); i++) {
+            String contactKey = "contact" + i.toString();
+            String contactID = // Get the contactID for each address
+                userData[contactKey] ?? "Null"; // Default to Null if missing
+
+            if (contactID != "Null") {
+              // Check if the ID is valid
+              // Update Contact
+              DocumentSnapshot contactDoc =
+                  await FirebaseFirestore.instance // Get the address's data
+                      .collection('contacts')
+                      .doc(contactID)
+                      .get();
+
+              if (contactDoc.exists && contactDoc.data() != null) {
+                // Check if the user exists
+                final contactData = contactDoc.data() as Map<String, dynamic>;
+
+                // Add contact to list of contacts
+                final contact = {
+                  'firstName': contactData['firstName'] ?? "Unknown_FirstName",
+                  'lastName': contactData['lastName'] ?? "Unknown_LastName",
+                  'phone': contactData['phone'] ?? "???-???-????",
+                  'relationship':
+                      contactData['relationship'] ?? "Other(specify)"
+                };
+
+                emergencyContacts.add(contact);
+              }
+            }
+          }
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      print("Error fetching user contact data: $e");
+    }
   }
 }
 
