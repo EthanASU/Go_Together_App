@@ -5,9 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 //View Model for the three tabs in the profile setup section (Personal/Address/Contact)
 class ProfilePersonalSetUpViewModel extends ChangeNotifier {
+  ProfilePersonalSetUpViewModel() {
+    fetchTransportationPrefsFromFirebase(); // Update transportation preferences on frontend from backend
+    fetchAddressesFromFirebase(); // Update address information on frontend from backend
+  }
+
   // Firestore Reference
-  final firestoreDB =
+  final _firestoreDB =
       FirebaseFirestore.instance; // Reference to the Firestore Database
+  final _numOfAllowedAddresses = 3;
 
   // Tab navigation selection
   int tab_Index = 0;
@@ -330,14 +336,22 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveAddress() {
+  // TODO: Prompt something on the user's screen when they exceed the address amount;
+  //  I made the function return a bool on whether or not they successfully added an address to make the implementation easier.
+  bool saveAddress() {
+    if (addresses.length > (_numOfAllowedAddresses - 1)) {
+      print(
+          "Exceeded the number of allowed addresses for this account. Address was not added");
+      return false;
+    }
+
     final newAddress = {
       'streetAddress': _streetAddress,
       'aptSuite': _aptSuite,
       'city': _city,
       'state': _state,
       'zipCode': _zipCode,
-      'name': _addressName.isEmpty ? 'Home' : _addressName,
+      'name': _addressName.isEmpty ? 'Saved Address' : _addressName,
       'isDefault': _isDefaultAddress,
     };
 
@@ -354,6 +368,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     clearAddressForm();
     _showAddressForm = false;
     notifyListeners();
+    return true;
   }
 
   void clearAddressForm() {
@@ -489,7 +504,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  //--------------- Fire Store Methods ---------------//
+  //--------------- Firebase Methods ---------------//
   /// Update Phone Number in database
   Future<void> updatePhoneNumberOnFirebase(String phoneNum) async {
     User? user = FirebaseAuth.instance.currentUser;
@@ -498,7 +513,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     final data = {"phoneNumber": phoneNum};
 
     // Store in database
-    await firestoreDB
+    await _firestoreDB
         .collection('users') // Document "transPrefs
         .doc(user!.uid) // User UID
         .set(data, SetOptions(merge: true)); // Set data in existing doc
@@ -514,7 +529,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     final data = {"email": email};
 
     // Store in database
-    await firestoreDB
+    await _firestoreDB
         .collection('users') // Document "transPrefs
         .doc(user!.uid) // User UID
         .set(data, SetOptions(merge: true)); // Set data in existing doc
@@ -531,7 +546,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     final data = {type: setting};
 
     // Store in database
-    await firestoreDB
+    await _firestoreDB
         .collection('transPrefs') // Document "transPrefs
         .doc(user!.uid) // User UID
         .set(data, SetOptions(merge: true)); // Set data in existing doc
@@ -574,18 +589,23 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
 
     // Generate and store new Address ID
     String randomId =
-        firestoreDB.collection("users").doc().id; // Generate random ID
+        _firestoreDB.collection("users").doc().id; // Generate random ID
+
+    // Store the address in the right user data entry
+    int addressNum = addresses.length;
+    String addressKey = "address" + addressNum.toString();
+
     // Store pref as a pair to parse database
-    final data = {"address1": randomId};
+    final data = {addressKey: randomId};
 
     // Store in database
-    await firestoreDB
+    await _firestoreDB
         .collection('users') // Document "transPrefs
         .doc(user!.uid) // User UID
         .set(data, SetOptions(merge: true)); // Set data in existing doc
 
     // Generate and Store Address with ID
-    await firestoreDB.collection('addresses').doc(randomId).set({
+    await _firestoreDB.collection('addresses').doc(randomId).set({
       'streetAddress': addressInfo['streetAddress'],
       'aptSuite': addressInfo['aptSuite'],
       'city': addressInfo['city'],
@@ -594,6 +614,64 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
       'name': addressInfo['name'],
       'isDefault': addressInfo['isDefault']
     });
+  }
+
+  Future<void> fetchAddressesFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance // Get the User's data
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          // Check if the user exists
+          final userData = userDoc.data() as Map<String, dynamic>;
+
+          // Iterate through address IDs and update them sequentially in the "Address" tab
+          var addressIDs = List<String>.filled(_numOfAllowedAddresses, "Null");
+          for (int i = 0; i < (addressIDs.length + 1); i++) {
+            String addressKey = "address" + i.toString();
+            String addressID = // Get the addressID for each address
+                userData[addressKey] ?? "Null"; // Default to Null if missing
+
+            if (addressID != "Null") {
+              // Check if the ID is valid
+              // Update Address
+              DocumentSnapshot addressDoc =
+                  await FirebaseFirestore.instance // Get the address's data
+                      .collection('addresses')
+                      .doc(addressID)
+                      .get();
+
+              if (addressDoc.exists && addressDoc.data() != null) {
+                // Check if the user exists
+                final addressData = addressDoc.data() as Map<String, dynamic>;
+
+                // Add address to list of addresses
+                final address = {
+                  'streetAddress':
+                      addressData['streetAddress'] ?? "Unknown_Street",
+                  'aptSuite': addressData['aptSuite'] ?? "",
+                  'city': addressData['city'] ?? "Unknown_City",
+                  'state': addressData['state'] ?? "Unknown_State",
+                  'zipCode': addressData['zipCode'] ?? "Unknown_Zip",
+                  'name': addressData['name'] ?? "Saved Address",
+                  'isDefault': addressData['isDefault'] ?? false
+                };
+
+                addresses.add(address);
+              }
+            }
+          }
+        }
+        notifyListeners();
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
   }
 }
 

@@ -892,7 +892,6 @@ class ProfileCompletionScreen extends StatelessWidget {
     String iconPath,
     ProfilePersonalSetUpViewModel viewModel,
   ) {
-    viewModel.fetchTransportationPrefsFromFirebase();
     final isSelected = viewModel.transportationModes.contains(mode);
 
     return GestureDetector(
