@@ -8,6 +8,7 @@ import 'Profile_Personal_SetUp.dart';
 // Firebase Imports
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../Views/create_new_trip_screen.dart';
 
 class ProfileSetUp extends StatelessWidget {
   const ProfileSetUp({super.key});
@@ -225,6 +226,27 @@ class ProfileScreenContent extends StatelessWidget {
               ],
               onTap: (index) {
                 // Handle navigation
+                switch (index) {
+                  case 0:
+                  // TODO: Navigate to Home
+                    break;
+                  case 1:
+                  // TODO: Navigate to Calendar
+                    break;
+                  case 2: // My Trip tab
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const CreateNewTripScreen()),
+                    );
+                    break;
+                  case 3:
+                  // TODO: Navigate to Chat
+                    break;
+                  case 4:
+                  // Already on Profile, maybe no nav needed
+                    break;
+                }
               },
             ),
           ],
