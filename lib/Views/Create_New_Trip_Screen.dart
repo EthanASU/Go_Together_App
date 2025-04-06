@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../Models/TripModel.dart';
+import '../Storage/TripStorage.dart';
 
 class CreateNewTripScreen extends StatefulWidget {
-  const CreateNewTripScreen({super.key});
+  final Function(TripModel) onTripCreated;
+  const CreateNewTripScreen({super.key, required this.onTripCreated});
 
   @override
   State<CreateNewTripScreen> createState() => _CreateNewTripScreenState();
@@ -13,8 +16,6 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
   String stop1 = '';
   String stop2 = '';
   List<String> savedAddresses = ["123 Main St", "456 Elm St", "789 Maple St"]; // TODO: Replace with firebase\
-  List<Widget> scheduledTrips = []; // TODO: Replace with firebase
-  List<Widget> pendingTrips = []; // TODO: Replace with firebase
 
 
   void selectTransport(String mode) {
@@ -138,18 +139,6 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
                 ),
               ),
             ),
-            Padding(padding: const EdgeInsets.only(top: 24)),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Scheduled Trips"),
-                Column(children: scheduledTrips),
-
-                SizedBox(height: 24),
-                Text("Pending Trips"),
-                Column(children: pendingTrips),
-              ],
-            ),
           ],
         ),
       ),
@@ -210,10 +199,17 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     print("Stop 1: $stop1");
     print("Stop 2: $stop2");
 
-    // Confirm trip request
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Trip '$tripName' request sent!")),
+    // Save trip to local storage
+    widget.onTripCreated(
+      TripModel(
+        tripName: tripName,
+        stop1: stop1,
+        stop2: stop2,
+        selectedTransport: selectedTransport,
+      ),
     );
+
+    Navigator.pop(context); // Return to MyTripsHomeScreen
 
     // TODO: Send trip request to firebase
   }
@@ -248,16 +244,5 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
         ),
       ),
     );
-  }
-
-  void addTripToScheduled(Widget tripCard) {
-    setState(() {
-      scheduledTrips.add(tripCard);
-    });
-  }
-  void addTripToPending(Widget tripCard) {
-    setState(() {
-      pendingTrips.add(tripCard);
-    });
   }
 }
