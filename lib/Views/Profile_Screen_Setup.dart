@@ -9,6 +9,7 @@ import 'Profile_Personal_SetUp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../Views/create_new_trip_screen.dart';
+import '../Views/My_Trips_Home_Screen.dart';
 
 class ProfileSetUp extends StatelessWidget {
   const ProfileSetUp({super.key});
@@ -24,6 +25,29 @@ class ProfileSetUp extends StatelessWidget {
 
 class ProfileScreenContent extends StatelessWidget {
   const ProfileScreenContent({super.key});
+
+  void _handleNavTap(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+      // TODO: Navigate to Home
+        break;
+      case 1:
+      // TODO: Navigate to Calendar
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const MyTripsHomeScreen()),
+        );
+        break;
+      case 3:
+      // TODO: Navigate to Chat
+        break;
+      case 4:
+      // Already on Profile
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,62 +216,16 @@ class ProfileScreenContent extends StatelessWidget {
 
             //Navigation Bar
             BottomNavigationBar(
-              currentIndex: 4, // Profile tab
+              currentIndex: 4,
+              onTap: (index) => _handleNavTap(context, index),
               type: BottomNavigationBarType.fixed,
               items: const [
-                BottomNavigationBarItem(
-                  icon: ImageIcon(
-                    AssetImage('Assets/Tab_Bar_Home_Icon.png'),
-                  ),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: ImageIcon(
-                    AssetImage('Assets/Tab_Bar_Calendar_Icon.png'),
-                  ),
-                  label: 'Calendar',
-                ),
-                BottomNavigationBarItem(
-                  icon: ImageIcon(
-                    AssetImage('Assets/Tab_Bar_Add_Icon.png'),
-                  ),
-                  label: 'My Trip',
-                ),
-                BottomNavigationBarItem(
-                  icon: ImageIcon(
-                    AssetImage('Assets/Tab_Bar_Chat_Icon.png'),
-                  ),
-                  label: 'Chat',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
-                ),
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+                BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Calendar'),
+                BottomNavigationBarItem(icon: Icon(Icons.add_circle), label: 'My Trip'),
+                BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
+                BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
               ],
-              onTap: (index) {
-                // Handle navigation
-                switch (index) {
-                  case 0:
-                  // TODO: Navigate to Home
-                    break;
-                  case 1:
-                  // TODO: Navigate to Calendar
-                    break;
-                  case 2: // My Trip tab
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const CreateNewTripScreen()),
-                    );
-                    break;
-                  case 3:
-                  // TODO: Navigate to Chat
-                    break;
-                  case 4:
-                  // Already on Profile, maybe no nav needed
-                    break;
-                }
-              },
             ),
           ],
         ),

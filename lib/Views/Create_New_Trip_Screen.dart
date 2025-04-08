@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import '../Models/TripModel.dart';
+import '../Storage/TripStorage.dart';
 // Firebase
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CreateNewTripScreen extends StatefulWidget {
-  const CreateNewTripScreen({super.key});
+  final Function(TripModel) onTripCreated;
+  const CreateNewTripScreen({super.key, required this.onTripCreated});
 
   @override
   State<CreateNewTripScreen> createState() => _CreateNewTripScreenState();
@@ -20,19 +23,14 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
   String tripName = '';
   String stop1 = '';
   String stop2 = '';
-
-  /// NOTE: From Ryan: still might be good to keep this stuff below
   List<String> savedAddresses = [
     "123 Main St",
     "456 Elm St",
     "789 Maple St"
-  ]; // TODO: Replace with firebase
-  List<Widget> scheduledTrips = []; // TODO: Replace with firebase
-  List<Widget> pendingTrips = []; // TODO: Replace with firebase
+  ]; // TODO: Replace with firebase\
+
   /// NOTE: From Ryan: adding this here to keep track of the
-  /// number of trips the user has made in this session but
-  /// I would like to get the length of the array's above to
-  /// eventually replace this variable
+  /// number of trips the user has made in this session
   var numberOfTripsMade = 1;
 
   void selectTransport(String mode) {
@@ -160,17 +158,6 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
                 ),
               ),
             ),
-            Padding(padding: const EdgeInsets.only(top: 24)),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Scheduled Trips"),
-                Column(children: scheduledTrips),
-                SizedBox(height: 24),
-                Text("Pending Trips"),
-                Column(children: pendingTrips),
-              ],
-            ),
           ],
         ),
       ),
@@ -234,12 +221,19 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     print("Stop 1: $stop1");
     print("Stop 2: $stop2");
 
-    // Confirm trip request
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Trip '$tripName' request sent!")),
+    // Save trip to local storage
+    widget.onTripCreated(
+      TripModel(
+        tripName: tripName,
+        stop1: stop1,
+        stop2: stop2,
+        selectedTransport: selectedTransport,
+      ),
     );
 
-    // TODO: Send trip request to firebase
+    Navigator.pop(context); // Return to MyTripsHomeScreen
+
+    // Send trip request to firebase
     storeTripOnFirebase();
   }
 
@@ -306,17 +300,5 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
         ),
       ),
     );
-  }
-
-  void addTripToScheduled(Widget tripCard) {
-    setState(() {
-      scheduledTrips.add(tripCard);
-    });
-  }
-
-  void addTripToPending(Widget tripCard) {
-    setState(() {
-      pendingTrips.add(tripCard);
-    });
   }
 }
