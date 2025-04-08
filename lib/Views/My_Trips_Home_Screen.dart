@@ -34,11 +34,13 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Column(
                   children: [
-                    _buildSection("Scheduled Trips", showScheduled, scheduledTrips, () {
+                    _buildSection(
+                        "Scheduled Trips", showScheduled, scheduledTrips, () {
                       setState(() => showScheduled = !showScheduled);
                     }),
                     const SizedBox(height: 16),
-                    _buildSection("Pending Trips", showPending, pendingTrips, () {
+                    _buildSection("Pending Trips", showPending, pendingTrips,
+                        () {
                       setState(() => showPending = !showPending);
                     }),
                   ],
@@ -54,7 +56,8 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("CREATE NEW TRIP", style: TextStyle(fontWeight: FontWeight.bold)),
+                  const Text("CREATE NEW TRIP",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -63,7 +66,8 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
                           builder: (context) => CreateNewTripScreen(
                             onTripCreated: (newTrip) {
                               setState(() {
-                                TripStorage.pendingTrips.add(newTrip);
+                                TripStorage.pendingTrips
+                                    .add(newTrip); // Add Pending Trip
                               });
                             },
                           ),
@@ -72,10 +76,13 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 10),
                     ),
-                    child: const Text("ADD", style: TextStyle(color: Colors.white)),
+                    child: const Text("ADD",
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),
@@ -87,10 +94,13 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
               type: BottomNavigationBarType.fixed,
               items: const [
                 BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-                BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Calendar'),
-                BottomNavigationBarItem(icon: Icon(Icons.add_circle), label: 'My Trip'),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.calendar_today), label: 'Calendar'),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.add_circle), label: 'My Trip'),
                 BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
-                BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.person), label: 'Profile'),
               ],
             ),
           ],
@@ -114,7 +124,8 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
     );
   }
 
-  Widget _buildSection(String title, bool expanded, List<TripModel> trips, VoidCallback onTapHeader) {
+  Widget _buildSection(String title, bool expanded, List<TripModel> trips,
+      VoidCallback onTapHeader) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -125,7 +136,8 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title, style: const TextStyle(fontSize: 18, color: Colors.blue)),
+                Text(title,
+                    style: const TextStyle(fontSize: 18, color: Colors.blue)),
                 Icon(expanded ? Icons.expand_less : Icons.expand_more),
               ],
             ),
@@ -134,7 +146,11 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
           if (expanded)
             trips.isEmpty
                 ? const Text("No trips", style: TextStyle(color: Colors.grey))
-                : Column(children: trips.map((trip) => _buildTripCard(trip, title.contains("Pending"))).toList()),
+                : Column(
+                    children: trips
+                        .map((trip) =>
+                            _buildTripCard(trip, title.contains("Pending")))
+                        .toList()),
         ],
       ),
     );
@@ -163,16 +179,16 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
   void _handleNavTap(BuildContext context, int index) {
     switch (index) {
       case 0:
-      // TODO: Navigate to Home
+        // TODO: Navigate to Home
         break;
       case 1:
-      // TODO: Navigate to Calendar
+        // TODO: Navigate to Calendar
         break;
       case 2:
-      // Already on My Trips – do nothing
+        // Already on My Trips – do nothing
         break;
       case 3:
-      // TODO: Navigate to Chat
+        // TODO: Navigate to Chat
         break;
       case 4:
         Navigator.pushReplacement(

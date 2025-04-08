@@ -21,13 +21,10 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
 
   String selectedTransport = 'Drive';
   String tripName = '';
+  String tripStatus = '';
   String stop1 = '';
   String stop2 = '';
-  List<String> savedAddresses = [
-    "123 Main St",
-    "456 Elm St",
-    "789 Maple St"
-  ]; // TODO: Replace with firebase\
+  List<String> savedAddresses = ["123 Main St", "456 Elm St", "789 Maple St"];
 
   /// NOTE: From Ryan: adding this here to keep track of the
   /// number of trips the user has made in this session
@@ -215,9 +212,13 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
       return;
     }
 
+    // TODO: toggle this 'Pending' or 'Scheduled' based on if there's any participants in trip
+    tripStatus = 'Pending';
+
     print("Trip Created!");
     print("Mode: $selectedTransport");
     print("Name: $tripName");
+    print("Trip Status: $tripStatus");
     print("Stop 1: $stop1");
     print("Stop 2: $stop2");
 
@@ -235,6 +236,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
 
     // Send trip request to firebase
     storeTripOnFirebase();
+    numberOfTripsMade++;
   }
 
   /// Store a trip data to Firebase
@@ -262,6 +264,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     await _firestoreDB.collection('trips').doc(randomId).set({
       'tripName': tripName,
       'transPrefs': selectedTransport,
+      'tripStatus': tripStatus,
       'stop1': stop1,
       'stop2': stop2
     });
