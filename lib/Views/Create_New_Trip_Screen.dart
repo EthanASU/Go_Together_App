@@ -26,9 +26,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
   String stop2 = '';
   List<String> savedAddresses = ["123 Main St", "456 Elm St", "789 Maple St"];
 
-  /// NOTE: From Ryan: adding this here to keep track of the
-  /// number of trips the user has made in this session
-  var numberOfTripsMade = 1;
+  var numberOfAllowedTrips = 10;
 
   void selectTransport(String mode) {
     setState(() {
@@ -201,7 +199,16 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     );
   }
 
-  void _submitTripRequest() {
+  // TODO: Prompt something on the user's screen when they exceed the trip amount;
+  // I made the function return a bool on whether or not they successfully added an trip to make the implementation easier.
+  bool _submitTripRequest() {
+    if (TripStorage.scheduledTrips.length + TripStorage.pendingTrips.length >
+        (numberOfAllowedTrips - 1)) {
+      print(
+          "Exceeded the number of allowed trips for this account. Trip was not added");
+      return false;
+    }
+
     if (tripName.isEmpty ||
         stop1.isEmpty ||
         stop2.isEmpty ||
@@ -209,7 +216,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please complete all trip fields")),
       );
-      return;
+      return false;
     }
 
     // TODO: toggle this 'Pending' or 'Scheduled' based on if there's any participants in trip
@@ -236,19 +243,23 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
 
     // Send trip request to firebase
     storeTripOnFirebase();
-    numberOfTripsMade++;
+    return true;
   }
 
+  // ******************* Firebase Methods ********************************
   /// Store a trip data to Firebase
   Future<void> storeTripOnFirebase() async {
     User? user = FirebaseAuth.instance.currentUser; // User Reference
 
-    // Generate and store new Contact ID
-    String randomId =
-        _firestoreDB.collection("users").doc().id; // Generate random ID
+    // Generate and store new Trip ID
+    String randomId = _firestoreDB
+        .collection("users")
+        .doc()
+        .id; // Generate random ID for trip
 
-    // Store trip in the right user data entry
-    int tripNum = numberOfTripsMade;
+    // The next trip number is the total number of trips
+    int tripNum =
+        TripStorage.scheduledTrips.length + TripStorage.pendingTrips.length;
     String tripKey = "trip" + tripNum.toString();
 
     // Store trip as a pair to parse database
