@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+// Firebase
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CreateNewTripScreen extends StatefulWidget {
   const CreateNewTripScreen({super.key});
@@ -8,14 +11,29 @@ class CreateNewTripScreen extends StatefulWidget {
 }
 
 class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
+  final _firebaseAuth =
+      FirebaseAuth.instance; // Reference to the Firebase Auth Object
+  final _firestoreDB =
+      FirebaseFirestore.instance; // Reference to the Firestore Database
+
   String selectedTransport = 'Drive';
   String tripName = '';
   String stop1 = '';
   String stop2 = '';
-  List<String> savedAddresses = ["123 Main St", "456 Elm St", "789 Maple St"]; // TODO: Replace with firebase\
+
+  /// NOTE: From Ryan: still might be good to keep this stuff below
+  List<String> savedAddresses = [
+    "123 Main St",
+    "456 Elm St",
+    "789 Maple St"
+  ]; // TODO: Replace with firebase
   List<Widget> scheduledTrips = []; // TODO: Replace with firebase
   List<Widget> pendingTrips = []; // TODO: Replace with firebase
-
+  /// NOTE: From Ryan: adding this here to keep track of the
+  /// number of trips the user has made in this session but
+  /// I would like to get the length of the array's above to
+  /// eventually replace this variable
+  var numberOfTripsMade = 1;
 
   void selectTransport(String mode) {
     setState(() {
@@ -70,7 +88,8 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
             const SizedBox(height: 24),
@@ -86,7 +105,8 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
                   child: Text(address),
                 );
               }).toList()
-                ..add(const DropdownMenuItem(value: 'manual', child: Text('Enter address manually'))),
+                ..add(const DropdownMenuItem(
+                    value: 'manual', child: Text('Enter address manually'))),
               onChanged: (value) {
                 if (value == 'manual') {
                   _showManualAddressDialog(1);
@@ -110,7 +130,8 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
                   child: Text(address),
                 );
               }).toList()
-                ..add(const DropdownMenuItem(value: 'manual', child: Text('Enter address manually'))),
+                ..add(const DropdownMenuItem(
+                    value: 'manual', child: Text('Enter address manually'))),
               onChanged: (value) {
                 if (value == 'manual') {
                   _showManualAddressDialog(2);
@@ -127,7 +148,8 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
                 onPressed: _submitTripRequest,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -144,7 +166,6 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
               children: [
                 Text("Scheduled Trips"),
                 Column(children: scheduledTrips),
-
                 SizedBox(height: 24),
                 Text("Pending Trips"),
                 Column(children: pendingTrips),
@@ -197,7 +218,10 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
   }
 
   void _submitTripRequest() {
-    if (tripName.isEmpty || stop1.isEmpty || stop2.isEmpty || selectedTransport.isEmpty) {
+    if (tripName.isEmpty ||
+        stop1.isEmpty ||
+        stop2.isEmpty ||
+        selectedTransport.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please complete all trip fields")),
       );
@@ -216,6 +240,39 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     );
 
     // TODO: Send trip request to firebase
+    storeTripOnFirebase();
+  }
+
+  /// Store a trip data to Firebase
+  Future<void> storeTripOnFirebase() async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
+
+    // Generate and store new Contact ID
+    String randomId =
+        _firestoreDB.collection("users").doc().id; // Generate random ID
+
+    // Store trip in the right user data entry
+    int tripNum = numberOfTripsMade;
+    String tripKey = "trip" + tripNum.toString();
+
+    // Store trip as a pair to parse database
+    final data = {tripKey: randomId};
+
+    // Store in database
+    await _firestoreDB
+        .collection('users') // Document "users"
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    // Generate and store contact with ID
+    await _firestoreDB.collection('trips').doc(randomId).set({
+      'tripName': tripName,
+      'transPrefs': selectedTransport,
+      'stop1': stop1,
+      'stop2': stop2
+    });
+
+    print("Trip created $tripKey and stored in db as $randomId");
   }
 
   Widget _buildTransportOption(String label, IconData icon) {
@@ -235,7 +292,8 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
         ),
         child: Column(
           children: [
-            Icon(icon, size: 36, color: isSelected ? Colors.green : Colors.black),
+            Icon(icon,
+                size: 36, color: isSelected ? Colors.green : Colors.black),
             const SizedBox(height: 6),
             Text(
               label,
@@ -255,6 +313,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
       scheduledTrips.add(tripCard);
     });
   }
+
   void addTripToPending(Widget tripCard) {
     setState(() {
       pendingTrips.add(tripCard);
