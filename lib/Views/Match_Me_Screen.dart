@@ -1,10 +1,12 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'Calendar_Screen.dart';
 import 'profile_screen_setup.dart';
 import '../Views/Create_New_Trip_Screen.dart';
 import '../Views/My_Trips_Home_Screen.dart';
 import '../Widgets/My_Trips_Top_Navigation_Bar.dart';
+import '../ViewModels/Profile_Personal_View_Model.dart';
 
 class Trip {
   final String pickupTime;
@@ -13,7 +15,7 @@ class Trip {
   final String dropOffDestination;
   final List<bool> frequency;
   final List<DateTime> dates;
-
+  final List<String> transportationModes;
   Trip({
     required this.pickupTime,
     required this.pickupLocation,
@@ -21,6 +23,7 @@ class Trip {
     this.dropOffDestination = '',
     required this.frequency,
     required this.dates,
+    this.transportationModes = const []
   });
 }
 
@@ -68,6 +71,7 @@ class _MatchMeScreenState extends State<MatchMeScreen> {
 
   void _saveCurrentTrip() {
     // Create a new trip with current form values
+    final viewModel = context.read<ProfilePersonalSetUpViewModel>();
     final newTrip = Trip(
       pickupTime: _pickupTime ?? '',
       pickupLocation: _pickupLocationController.text,
@@ -75,6 +79,7 @@ class _MatchMeScreenState extends State<MatchMeScreen> {
       dropOffDestination: _dropOffLocationController.text,
       frequency: List.from(_selectedDays),
       dates: List.from(_selectedDates),
+      transportationModes: List.from(viewModel.transportationModes),
     );
 
 
@@ -208,7 +213,7 @@ class _MatchMeScreenState extends State<MatchMeScreen> {
   }
   @override
   Widget build(BuildContext context) {
-
+    final viewModel = context.watch<ProfilePersonalSetUpViewModel>();
   final List<String> timeOptions = _generateTimeOptions();
 
     return Scaffold(
@@ -280,6 +285,14 @@ class _MatchMeScreenState extends State<MatchMeScreen> {
                                     if (trip.dropOffDestination.isNotEmpty)
                                       Text('To: ${trip.dropOffDestination}'),
                                     Text('Days: ${selectedDays.join(", ")}'),
+
+                                    if (trip.transportationModes.isNotEmpty)
+                                      Row(
+                                        children: [
+                                          Text('Transport: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                          Text(trip.transportationModes.join(", ")),
+                                      ],
+                                    ),
                                   ],
                                 ),
                               );
@@ -618,6 +631,30 @@ class _MatchMeScreenState extends State<MatchMeScreen> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            _buildTransportOption(
+                              context,
+                              'Carpool',
+                              'Assets/Drive_icon.png',
+                              viewModel,
+                            ),
+                            _buildTransportOption(
+                              context,
+                              'Bike',
+                              'Assets/Bike_icon.png',
+                              viewModel,
+                            ),
+                            _buildTransportOption(
+                              context,
+                              'Walk',
+                              'Assets/Pedestrian_icon.png',
+                              viewModel,
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -814,4 +851,53 @@ void _handleNavTap(BuildContext context, int index) {
       );
       break;
   }
+}
+
+Widget _buildTransportOption(
+    BuildContext context,
+    String mode,
+    String iconPath,
+    ProfilePersonalSetUpViewModel viewModel,
+    ) {
+  final isSelected = viewModel.transportationModes.contains(mode);
+
+  return GestureDetector(
+    onTap: () => viewModel.toggleTransportationMode(mode),
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isSelected ? Color(0xFF188ECE) : Colors.transparent,  // Blue background when selected
+        border: Border.all(
+          color: isSelected ? Color(0xFF188ECE) : Colors.grey,
+          width: 2,
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ColorFiltered(
+            colorFilter: ColorFilter.mode(
+              isSelected ? Colors.white : Colors.black,  // White icon when selected
+              BlendMode.srcIn,
+            ),
+            child: Image.asset(
+              iconPath,
+              height: 60,
+              width: 60,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            mode,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.black,
+              fontSize: 13,
+              fontFamily: 'Poppins',
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }
