@@ -24,10 +24,10 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: [
-
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => ProfileViewModel()),
-        ChangeNotifierProvider(create: (context) => ProfilePersonalSetUpViewModel()),
+        ChangeNotifierProvider(
+            create: (context) => ProfilePersonalSetUpViewModel()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -73,5 +73,3 @@ class _SplashScreenWithDelayState extends State<SplashScreenWithDelay> {
     return SplashScreen();
   }
 }
-
-

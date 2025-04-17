@@ -51,66 +51,71 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
               },
             ),
             const SizedBox(height: 12),
-                    _buildTabs(),
+            _buildTabs(),
 
-                    // Trip Lists
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Column(
-                          children: [
-                            _buildSection("Scheduled Trips", showScheduled, scheduledTrips, () {
-                              setState(() => showScheduled = !showScheduled);
-                            }),
-                            const SizedBox(height: 16),
-                            _buildSection("Pending Trips", showPending, pendingTrips, () {
-                              setState(() => showPending = !showPending);
-                            }),
-                          ],
-                        ),
-                      ),
-                    ),
+            // Trip Lists
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  children: [
+                    _buildSection(
+                        "Scheduled Trips", showScheduled, scheduledTrips, () {
+                      setState(() => showScheduled = !showScheduled);
+                    }),
+                    const SizedBox(height: 16),
+                    _buildSection("Pending Trips", showPending, pendingTrips,
+                        () {
+                      setState(() => showPending = !showPending);
+                    }),
+                  ],
+                ),
+              ),
+            ),
 
-                    const Divider(height: 1),
+            const Divider(height: 1),
 
-                    // Create New Trip Button
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("CREATE NEW TRIP", style: TextStyle(fontWeight: FontWeight.bold)),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CreateNewTripScreen(
-                                    onTripCreated: (newTrip) {
-                                      setState(() {
-                                        TripStorage.pendingTrips.add(newTrip);
-                                      });
-                                    },
-                                  ),
-                                ),
-                              );
+            // Create New Trip Button
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text("CREATE NEW TRIP",
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateNewTripScreen(
+                            onTripCreated: (newTrip) {
+                              setState(() {
+                                TripStorage.pendingTrips.add(newTrip);
+                              });
                             },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                            ),
-                            child: const Text("ADD", style: TextStyle(color: Colors.white)),
                           ),
-                        ],
-                      ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 10),
                     ),
-
+                    child: const Text("ADD",
+                        style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
       // Bottom Navigation Bar
-      bottomNavigationBar:BottomNavigationBar(
+      bottomNavigationBar: BottomNavigationBar(
         currentIndex: 2,
         onTap: (index) => _handleNavTap(context, index),
         type: BottomNavigationBarType.fixed,
@@ -143,7 +148,7 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
             icon: Icon(Icons.person),
             label: 'Profile',
           ),
-        ],// Your existing bottom navigation bar items
+        ], // Your existing bottom navigation bar items
       ),
     );
   }
@@ -163,7 +168,8 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
     );
   }
 
-  Widget _buildSection(String title, bool expanded, List<TripModel> trips, VoidCallback onTapHeader) {
+  Widget _buildSection(String title, bool expanded, List<TripModel> trips,
+      VoidCallback onTapHeader) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -174,7 +180,8 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(title, style: const TextStyle(fontSize: 18, color: Colors.blue)),
+                Text(title,
+                    style: const TextStyle(fontSize: 18, color: Colors.blue)),
                 Icon(expanded ? Icons.expand_less : Icons.expand_more),
               ],
             ),
@@ -183,7 +190,11 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
           if (expanded)
             trips.isEmpty
                 ? const Text("No trips", style: TextStyle(color: Colors.grey))
-                : Column(children: trips.map((trip) => _buildTripCard(trip, title.contains("Pending"))).toList()),
+                : Column(
+                    children: trips
+                        .map((trip) =>
+                            _buildTripCard(trip, title.contains("Pending")))
+                        .toList()),
         ],
       ),
     );
@@ -212,20 +223,20 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
   void _handleNavTap(BuildContext context, int index) {
     switch (index) {
       case 0:
-      // TODO: Navigate to Home
+        // TODO: Navigate to Home
         break;
       case 1:
-      // TODO: Navigate to Calendar
+        // TODO: Navigate to Calendar
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const CalendarScreen()),
         );
         break;
       case 2:
-      // Already on My Trips – do nothing
+        // Already on My Trips – do nothing
         break;
       case 3:
-      // TODO: Navigate to Chat
+        // TODO: Navigate to Chat
         break;
       case 4:
         Navigator.pushReplacement(

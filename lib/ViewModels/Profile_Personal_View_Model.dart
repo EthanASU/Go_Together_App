@@ -1,10 +1,15 @@
-//import packages
+// Import packages
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../ViewModels/Profile_Screen_View_Model.dart';
+
+// Firebase Imports
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 //View Model for the three tabs in the profile setup section (Personal/Address/Contact)
 class ProfilePersonalSetUpViewModel extends ChangeNotifier {
+  // Constructor
   ProfilePersonalSetUpViewModel() {
     fetchTransportationPrefsFromFirebase(); // Update transportation preferences on frontend from backend
     fetchAddressesFromFirebase(); // Update address information on frontend from backend
@@ -61,6 +66,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // TODO: This was removed by Raymond
   // Get a simple boolean value from a transportation mode entered
   void setTransportationMode(String mode, bool toggle) {
     if (!toggle) {
@@ -135,16 +141,17 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
   String? get carModel => car_Model;
   String get passengerCount => passenger_Count;
 
-  // Saved data structure
-  Map<String, dynamic> savedCarInfo = {};
-
   List<String> get makes => carModels.keys.toList()..sort();
+
   List<String> get models {
     if (car_Make != null && carModels.containsKey(car_Make)) {
       return carModels[car_Make]!;
     }
     return ['Select Make First'];
   }
+
+  // TODO: Removed by Raymond
+  Map<String, dynamic> savedCarInfo = {};
 
   //Update functions for Year, Make, Model
   void updateCarYear(String? year) {
@@ -222,7 +229,9 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
   }
 
   //--------------- Address Tab ---------------//
-  List<Map<String, dynamic>> addresses = [];
+  // Storage for addresses
+  List<Map<String, dynamic>> _addresses = [];
+  List<Map<String, dynamic>> get addresses => _addresses;
   bool _showAddressForm = false;
 
   String _streetAddress = '';
@@ -232,6 +241,10 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
   String _zipCode = '';
   String _addressName = '';
   bool _isDefaultAddress = false;
+  bool _isProfileComplete = false;
+
+  Map<String, dynamic>? currentEditingAddress;
+  int currentEditingAddressIndex = -1;
 
   // States list for dropdown
   final List<String> states = [
@@ -296,6 +309,23 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
   String get zipCode => _zipCode;
   String get addressName => _addressName;
   bool get isDefaultAddress => _isDefaultAddress;
+  bool get isProfileComplete => _isProfileComplete;
+
+  // Add this setter
+  set showAddressForm(bool value) {
+    _showAddressForm = value;
+    notifyListeners();
+  }
+
+  set addressName(String value) {
+    _addressName = value;
+    notifyListeners();
+  }
+
+  set streetAddress(String value) {
+    _streetAddress = value;
+    notifyListeners();
+  }
 
   //*Methods for updating the information entered into the address form section*//
   void toggleAddressForm() {
@@ -388,6 +418,70 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
         _city.isNotEmpty &&
         _state.isNotEmpty &&
         _zipCode.isNotEmpty;
+  }
+
+  // TODO: Implement Firebase with edits
+  //Edit button for Address
+  void editAddress(Map<String, dynamic> address, int index) {
+    // Store the address being edited and its index
+    currentEditingAddress = address;
+    currentEditingAddressIndex = index;
+
+    // Pre-populate the form fields with existing address data
+    _addressName = address['name'] ?? '';
+    _streetAddress = address['streetAddress'] ?? '';
+    _aptSuite = address['aptSuite'] ?? '';
+    _city = address['city'] ?? '';
+    _state = address['state'] ?? '';
+    _zipCode = address['zipCode'] ?? '';
+    _isDefaultAddress = address['isDefault'] ?? false;
+
+    // Show the address form
+    _showAddressForm = true;
+    notifyListeners();
+  }
+
+  void updateExistingAddress() {
+    if (currentEditingAddressIndex != -1 && isAddressFormValid) {
+      // Create updated address
+      final updatedAddress = {
+        'name': addressName,
+        'streetAddress': streetAddress,
+        'aptSuite': aptSuite,
+        'city': city,
+        'state': state,
+        'zipCode': zipCode,
+        'isDefault': isDefaultAddress,
+      };
+
+      // Update list
+      final updatedAddresses = List<Map<String, dynamic>>.from(addresses);
+      updatedAddresses[currentEditingAddressIndex] = updatedAddress;
+
+      // If this is set as default, make sure others are not default
+      if (isDefaultAddress) {
+        for (int i = 0; i < updatedAddresses.length; i++) {
+          if (i != currentEditingAddressIndex) {
+            updatedAddresses[i] =
+                Map<String, dynamic>.from(updatedAddresses[i]);
+            updatedAddresses[i]['isDefault'] = false;
+          }
+        }
+      }
+
+      // Update address list
+      _addresses = updatedAddresses;
+
+      // Reset editing state
+      currentEditingAddressIndex = -1;
+      currentEditingAddress = null;
+
+      // Clear form
+      clearAddressForm();
+      _showAddressForm = false;
+
+      notifyListeners();
+    }
   }
 
 //--------------- Emergency Contact Tab ---------------//
@@ -514,6 +608,87 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
   void dispose() {
     phoneController.dispose();
     super.dispose();
+  }
+
+  //-----updating information from the forms onto the main profile page-----//
+// Update addresses
+  void updateAddresses(List<Map<String, dynamic>> newAddresses) {
+    _addresses = newAddresses;
+    _isProfileComplete = true;
+    notifyListeners();
+  }
+
+// Format address for display
+  String formatAddressLine(Map<String, dynamic> address) {
+    return '${address['streetAddress']}, ${address['city']}, ${address['state']} ${address['zipCode']}';
+  }
+
+  void initializeFromMainProfile(ProfileViewModel mainViewModel) {
+    updateEmail(mainViewModel.emailAddress);
+    updatePhone(mainViewModel.phoneNumber);
+    _addresses = List.from(mainViewModel.addresses);
+
+    emergencyContacts = List.from(mainViewModel.emergencyContacts);
+
+    notifyListeners();
+  }
+
+  bool savePersonalInfo() {
+    if (email_Address.isNotEmpty && phone_Number.isNotEmpty) {
+      // Check transportation modes
+      if (!transportation_Modes.contains('Carpool') ||
+          (transportation_Modes.contains('Carpool') && savedCars.isNotEmpty)) {
+        is_Saved = true;
+
+        if (transportation_Modes.contains('Walk')) {}
+        if (transportation_Modes.contains('Bike')) {}
+
+        if (transportation_Modes.contains('Carpool')) {
+          saveCarInformation();
+        }
+        notifyListeners();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool canSave() {
+    if (email_Address.isEmpty || phone_Number.isEmpty) {
+      return false;
+    }
+    if (transportation_Modes.isEmpty) {
+      return false;
+    }
+    if (transportation_Modes.contains('Carpool') && savedCars.isEmpty) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // Methods to store information
+  void storeEmailAndPhone(String email, String phoneNumber) {
+    email_Address = email;
+    phone_Number = phoneNumber;
+    notifyListeners();
+  }
+
+  bool savePersonalInfoToMainProfile(BuildContext context) {
+    // Validate information
+    if (canSave()) {
+      final mainViewModel =
+          Provider.of<ProfileViewModel>(context, listen: false);
+
+      mainViewModel.updateEmailAddress(email_Address);
+      mainViewModel.updatePhoneNumber(phone_Number);
+      is_Saved = true;
+      notifyListeners();
+
+      return true;
+    }
+
+    return false;
   }
 
   //--------------- Firebase ---------------//

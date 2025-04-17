@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
@@ -36,17 +35,16 @@ class ProfileSetUp extends StatelessWidget {
   }
 }
 
-
 class ProfileScreenContent extends StatelessWidget {
   const ProfileScreenContent({super.key});
 
   void _handleNavTap(BuildContext context, int index) {
     switch (index) {
       case 0:
-      // TODO: Navigate to Home
+        // TODO: Navigate to Home
         break;
       case 1:
-      // TODO: Navigate to Calendar
+        // TODO: Navigate to Calendar
         break;
       case 2:
         Navigator.pushReplacement(
@@ -55,10 +53,10 @@ class ProfileScreenContent extends StatelessWidget {
         );
         break;
       case 3:
-      // TODO: Navigate to Chat
+        // TODO: Navigate to Chat
         break;
       case 4:
-      // Already on Profile
+        // Already on Profile
         break;
     }
   }
@@ -69,7 +67,8 @@ class ProfileScreenContent extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(  // Added back for scrolling
+        child: SingleChildScrollView(
+          // Added back for scrolling
           child: Column(
             children: [
               const SizedBox(height: 150),
@@ -79,46 +78,49 @@ class ProfileScreenContent extends StatelessWidget {
                   alignment: Alignment.topRight,
                   child: viewModel.isProfileComplete
                       ? ElevatedButton(
-                    onPressed: () {
-                      final setupViewModel = ProfilePersonalSetUpViewModel();
-                      // Initialize with existing data
-                      setupViewModel.initializeFromMainProfile(viewModel);
+                          onPressed: () {
+                            final setupViewModel =
+                                ProfilePersonalSetUpViewModel();
+                            // Initialize with existing data
+                            setupViewModel.initializeFromMainProfile(viewModel);
 
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChangeNotifierProvider.value(
-                            value: setupViewModel,
-                            child: const ProfileCompletionScreen(),
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ChangeNotifierProvider.value(
+                                  value: setupViewModel,
+                                  child: const ProfileCompletionScreen(),
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF8BC541),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF8BC541),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    child: const Text(
-                      'Edit',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-                  )
+                          child: const Text(
+                            'Edit',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        )
                       : Container(), // Empty container when button shouldn't show
                 ),
               ),
 
-              const SizedBox(height: 30), // Space between edit button and username
+              const SizedBox(
+                  height: 30), // Space between edit button and username
 
               // Username centered
               Center(
@@ -233,7 +235,8 @@ class ProfileScreenContent extends StatelessWidget {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    await FirebaseAuth.instance.signOut();  // Sign Out of Firebase
+                    await FirebaseAuth.instance
+                        .signOut(); // Sign Out of Firebase
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -276,13 +279,16 @@ class ProfileScreenContent extends StatelessWidget {
               ] else ...[
                 // User Information Section
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 65), // Wider side margins
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 65), // Wider side margins
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, // Left align all content
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Left align all content
                     children: [
                       // Email
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 30), // Space between items
+                        padding: const EdgeInsets.only(
+                            bottom: 30), // Space between items
                         child: Row(
                           children: [
                             Image.asset(
@@ -305,7 +311,8 @@ class ProfileScreenContent extends StatelessWidget {
 
                       // Phone - centered with icon
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 30), // Space between items
+                        padding: const EdgeInsets.only(
+                            bottom: 30), // Space between items
                         child: Row(
                           children: [
                             Image.asset(
@@ -343,47 +350,58 @@ class ProfileScreenContent extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // Iterate through addresses without repeating the icon
-                                  ...viewModel.addresses.map((address) => Padding(
-                                    padding: const EdgeInsets.only(bottom: 20), // Space between addresses
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          address['isDefault'] ? 'Home (Default)' : address['name'] ?? 'Address',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: 'Poppins',
-                                            fontWeight: FontWeight.w500,
-                                            color: Color(0xFF188ECE),
-                                          ),
-                                        ),
-                                        // For the street address line with optional apt/suite
-                                        address['aptSuite'] != null && address['aptSuite'].isNotEmpty
-                                            ? Text(
-                                          "${address['streetAddress']}, ${address['aptSuite']}",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: 'Poppins',
-                                          ),
-                                        )
-                                            : Text(
-                                          address['streetAddress'],
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: 'Poppins',
-                                          ),
-                                        ),
+                                  ...viewModel.addresses
+                                      .map((address) => Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom:
+                                                    20), // Space between addresses
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  address['isDefault']
+                                                      ? 'Home (Default)'
+                                                      : address['name'] ??
+                                                          'Address',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontFamily: 'Poppins',
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Color(0xFF188ECE),
+                                                  ),
+                                                ),
+                                                // For the street address line with optional apt/suite
+                                                address['aptSuite'] != null &&
+                                                        address['aptSuite']
+                                                            .isNotEmpty
+                                                    ? Text(
+                                                        "${address['streetAddress']}, ${address['aptSuite']}",
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontFamily: 'Poppins',
+                                                        ),
+                                                      )
+                                                    : Text(
+                                                        address[
+                                                            'streetAddress'],
+                                                        style: TextStyle(
+                                                          fontSize: 16,
+                                                          fontFamily: 'Poppins',
+                                                        ),
+                                                      ),
 
-                                        Text(
-                                          '${address['city']}, ${address['state']} ${address['zipCode']}',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: 'Poppins',
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )).toList(),
+                                                Text(
+                                                  '${address['city']}, ${address['state']} ${address['zipCode']}',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontFamily: 'Poppins',
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ))
+                                      .toList(),
                                 ],
                               ),
                             ),
@@ -404,28 +422,32 @@ class ProfileScreenContent extends StatelessWidget {
                             ),
                           ),
                         ),
-                        ...viewModel.emergencyContacts.map((contact) => Padding(
-                          padding: const EdgeInsets.only(bottom: 10, left: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${contact['firstName']} ${contact['lastName']} (${contact['relationship']})',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                              Text(
-                                contact['phone'],
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins',
-                                ),
-                              ),
-                            ],
-                          ),
-                        )).toList(),
+                        ...viewModel.emergencyContacts
+                            .map((contact) => Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 10, left: 5),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${contact['firstName']} ${contact['lastName']} (${contact['relationship']})',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                      Text(
+                                        contact['phone'],
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ))
+                            .toList(),
                       ],
                     ],
                   ),
@@ -472,28 +494,28 @@ class ProfileScreenContent extends StatelessWidget {
                   // Handle navigation
                   switch (index) {
                     case 0:
-                    // TODO: Navigate to Home
+                      // TODO: Navigate to Home
                       break;
                     case 1:
-                    // TODO: Navigate to Calendar
-                    Navigator.push(
-                    context,
+                      // TODO: Navigate to Calendar
+                      Navigator.push(
+                        context,
                         MaterialPageRoute(
-                        builder: (_) => const CalendarScreen()),
-                        );
+                            builder: (_) => const CalendarScreen()),
+                      );
                       break;
                     case 2: // My Trip tab
-                    Navigator.push(
-                    context,
+                      Navigator.push(
+                        context,
                         MaterialPageRoute(
-                        builder: (_) => const MyTripsHomeScreen()),
-                        );
+                            builder: (_) => const MyTripsHomeScreen()),
+                      );
                       break;
                     case 3:
-                    // TODO: Navigate to Chat
+                      // TODO: Navigate to Chat
                       break;
                     case 4:
-                    // Already on Profile, maybe no nav needed
+                      // Already on Profile, maybe no nav needed
                       break;
                   }
                 },
@@ -504,6 +526,4 @@ class ProfileScreenContent extends StatelessWidget {
       ),
     );
   }
-  }
-
-
+}
