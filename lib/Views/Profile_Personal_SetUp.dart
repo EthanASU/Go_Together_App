@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
 import '../Views/Profile_AddressForm.dart';
 import '../Views/Profile_Contact_Form.dart';
-import 'Profile_Screen_Setup.dart';
+import '../Views/profile_screen_setup.dart';
+//import 'Profile_Screen_Setup.dart';
 import '../Widgets/address_card.dart';
 import 'package:flutter/services.dart';
+import '../ViewModels/Profile_Screen_View_Model.dart';
 
 //View for the three tabs in the profile page section (personal, address, contact)
 class ProfileCompletionScreen extends StatelessWidget {
@@ -29,11 +31,30 @@ class ProfileCompletionScreen extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () {
+                      final mainViewModel = context.read<ProfileViewModel>();
+                      final personalViewModel =
+                          context.read<ProfilePersonalSetUpViewModel>();
+
+                      // Explicitly update email and phone in the main view model
+                      mainViewModel
+                          .updateEmailAddress(personalViewModel.emailAddress);
+                      mainViewModel
+                          .updatePhoneNumber(personalViewModel.phoneNumber);
+                      // Add this code to update addresses
+                      if (personalViewModel.addresses.isNotEmpty) {
+                        mainViewModel
+                            .updateAddresses(personalViewModel.addresses);
+                      }
+                      // Add this code to update emergency contacts
+                      if (personalViewModel.emergencyContacts.isNotEmpty) {
+                        mainViewModel.updateEmergencyContacts(
+                            personalViewModel.emergencyContacts);
+                      }
+
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              const ProfileSetUp(), // Your initial profile page
+                          builder: (context) => ProfileSetUp(),
                         ),
                       );
                     },
@@ -64,7 +85,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                 children: [
                   _buildTab(context, 'Personal', 0),
                   _buildTab(context, 'Address', 1),
-                  _buildTab(context, 'Contact', 2),
+                  _buildTab(context, 'Contacts', 2),
                 ],
               ),
             ),
@@ -820,51 +841,52 @@ class ProfileCompletionScreen extends StatelessWidget {
             ),
             //------------------ End of Emergency Tab Section ---------------//
 
-            // Bottom Navigation Bar
-            BottomNavigationBar(
-              currentIndex: 4,
-              type: BottomNavigationBarType.fixed,
-              items: [
-                BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'Assets/Tab_Bar_Home_Icon.png',
-                    height: 24,
-                  ),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'Assets/Tab_Bar_Calendar_Icon.png',
-                    height: 24,
-                  ),
-                  label: 'Calendar',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'Assets/Tab_Bar_Add_Icon.png',
-                    height: 24,
-                  ),
-                  label: 'My Trip',
-                ),
-                BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'Assets/Tab_Bar_Chat_Icon.png',
-                    height: 24,
-                  ),
-                  label: 'Chat',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: 'Profile',
-                ),
-              ],
-            ),
+            // // Bottom Navigation Bar
+            // BottomNavigationBar(
+            //   currentIndex: 4,
+            //   type: BottomNavigationBarType.fixed,
+            //   items: [
+            //     BottomNavigationBarItem(
+            //       icon: Image.asset(
+            //         'Assets/Tab_Bar_Home_Icon.png',
+            //         height: 24,
+            //       ),
+            //       label: 'Home',
+            //     ),
+            //     BottomNavigationBarItem(
+            //       icon: Image.asset(
+            //         'Assets/Tab_Bar_Calendar_Icon.png',
+            //         height: 24,
+            //       ),
+            //       label: 'Calendar',
+            //     ),
+            //     BottomNavigationBarItem(
+            //       icon: Image.asset(
+            //         'Assets/Tab_Bar_Add_Icon.png',
+            //         height: 24,
+            //       ),
+            //       label: 'My Trip',
+            //     ),
+            //     BottomNavigationBarItem(
+            //       icon: Image.asset(
+            //         'Assets/Tab_Bar_Chat_Icon.png',
+            //         height: 24,
+            //       ),
+            //       label: 'Chat',
+            //     ),
+            //     BottomNavigationBarItem(
+            //       icon: Icon(Icons.person),
+            //       label: 'Profile',
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),
     );
   }
 
+  //---------------- Widgets ----------------//
   Widget _buildTab(BuildContext context, String title, int index) {
     final viewModel = context.watch<ProfilePersonalSetUpViewModel>();
     final isSelected = viewModel.TabIndex == index;
@@ -916,6 +938,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                 isSelected
                     ? Colors.white
                     : Colors.black, // White icon when selected
+
                 BlendMode.srcIn,
               ),
               child: Image.asset(
