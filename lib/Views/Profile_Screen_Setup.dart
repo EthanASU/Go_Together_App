@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../Views/create_new_trip_screen.dart';
 import '../Views/My_Trips_Home_Screen.dart';
+import '../Views/HomeScreen.dart';
 
 class ProfileSetUp extends StatelessWidget {
   const ProfileSetUp({super.key});
@@ -41,10 +42,19 @@ class ProfileScreenContent extends StatelessWidget {
   void _handleNavTap(BuildContext context, int index) {
     switch (index) {
       case 0:
-        // TODO: Navigate to Home
+      // Navigate to Home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChangeNotifierProvider(
+              create: (_) => ProfileViewModel(),
+              child: const HomeScreen(),
+            ),
+          ),
+        );
         break;
       case 1:
-        // TODO: Navigate to Calendar
+      // TODO: Navigate to Calendar
         break;
       case 2:
         Navigator.pushReplacement(
@@ -53,10 +63,10 @@ class ProfileScreenContent extends StatelessWidget {
         );
         break;
       case 3:
-        // TODO: Navigate to Chat
+      // TODO: Navigate to Chat
         break;
       case 4:
-        // Already on Profile
+      // Already on Profile
         break;
     }
   }
@@ -133,7 +143,7 @@ class ProfileScreenContent extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 30),
+            const SizedBox(height: 30),
 
               //TODO: Rides complete counter and Your friends button functionality
               // rides completed and history section

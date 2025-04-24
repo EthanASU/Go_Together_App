@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_together_app/Storage/TripStorage.dart';
+import 'package:provider/provider.dart';
+import '../ViewModels/Profile_Screen_View_Model.dart';
 import '../Views/Profile_Screen_Setup.dart';
 import '../Views/Create_New_Trip_Screen.dart';
 import '../Views/Calendar_Screen.dart';
 import '../Models/TripModel.dart';
 import '../Widgets/TripCard.dart';
 import '../Widgets/My_Trips_Top_Navigation_Bar.dart';
+import '../Views/FindFriendsScreen.dart';
+import '../Views/HomeScreen.dart';
 
 // Firebase
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -37,120 +41,123 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Tabs
-            // Use the new TopNavigationBar widget
-            TopNavigationBar(
-              selectedIndex: _selectedTabIndex,
-              onTap: (index) {
-                setState(() {
-                  _selectedTabIndex = index;
-                });
-              },
-            ),
-            const SizedBox(height: 12),
-            _buildTabs(),
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Tabs
+              /// ******* Deleted on Ethan's Side
+              // Use the new TopNavigationBar widget
+              TopNavigationBar(
+                selectedIndex: _selectedTabIndex,
+                onTap: (index) {
+                  setState(() {
+                    _selectedTabIndex = index;
+                  });
+                },
+              ),
 
-            // Trip Lists
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Column(
+              /// *****************************
+              const SizedBox(height: 12),
+              _buildTabs(),
+
+              // Trip Lists
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    children: [
+                      _buildSection(
+                          "Scheduled Trips", showScheduled, scheduledTrips, () {
+                        setState(() => showScheduled = !showScheduled);
+                      }),
+                      const SizedBox(height: 16),
+                      _buildSection("Pending Trips", showPending, pendingTrips,
+                          () {
+                        setState(() => showPending = !showPending);
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+
+              const Divider(height: 1),
+
+              // Create New Trip Button
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildSection(
-                        "Scheduled Trips", showScheduled, scheduledTrips, () {
-                      setState(() => showScheduled = !showScheduled);
-                    }),
-                    const SizedBox(height: 16),
-                    _buildSection("Pending Trips", showPending, pendingTrips,
-                        () {
-                      setState(() => showPending = !showPending);
-                    }),
+                    const Text("CREATE NEW TRIP",
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CreateNewTripScreen(
+                              onTripCreated: (newTrip) {
+                                setState(() {
+                                  TripStorage.pendingTrips.add(newTrip);
+                                });
+                              },
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20)),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 10),
+                      ),
+                      child: const Text("ADD",
+                          style: TextStyle(color: Colors.white)),
+                    ),
                   ],
                 ),
               ),
-            ),
-
-            const Divider(height: 1),
-
-            // Create New Trip Button
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("CREATE NEW TRIP",
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CreateNewTripScreen(
-                            onTripCreated: (newTrip) {
-                              setState(() {
-                                TripStorage.pendingTrips.add(newTrip);
-                              });
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 10),
-                    ),
-                    child: const Text("ADD",
-                        style: TextStyle(color: Colors.white)),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        onTap: (index) => _handleNavTap(context, index),
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage('Assets/Tab_Bar_Home_Icon.png'),
+        // Bottom Navigation Bar
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 2,
+          onTap: (index) => _handleNavTap(context, index),
+          type: BottomNavigationBarType.fixed,
+          items: const [
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('Assets/Tab_Bar_Home_Icon.png'),
+              ),
+              label: 'Home',
             ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage('Assets/Tab_Bar_Calendar_Icon.png'),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('Assets/Tab_Bar_Calendar_Icon.png'),
+              ),
+              label: 'Calendar',
             ),
-            label: 'Calendar',
-          ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage('Assets/Tab_Bar_Add_Icon.png'),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('Assets/Tab_Bar_Add_Icon.png'),
+              ),
+              label: 'My Trip',
             ),
-            label: 'My Trip',
-          ),
-          BottomNavigationBarItem(
-            icon: ImageIcon(
-              AssetImage('Assets/Tab_Bar_Chat_Icon.png'),
+            BottomNavigationBarItem(
+              icon: ImageIcon(
+                AssetImage('Assets/Tab_Bar_Chat_Icon.png'),
+              ),
+              label: 'Chat',
             ),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ], // Your existing bottom navigation bar items
-      ),
-    );
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+            ),
+          ], // Your existing bottom navigation bar items
+        ));
   }
 
   Widget _buildTripCard(TripModel trip, bool isPending) {
@@ -203,18 +210,30 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
   Widget _buildTabs() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: const [
-        Text(
+      children: [
+        const Text(
           "MATCH ME",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        Text(
+        const Text(
           "MY TRIPS",
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
         ),
-        Text(
-          "FIND FRIENDS",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FindFriendsScreen()),
+            );
+          },
+          child: const Text(
+            "FIND FRIENDS",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              decoration: TextDecoration.underline, // Optional styling
+            ),
+          ),
         ),
       ],
     );
@@ -223,7 +242,16 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
   void _handleNavTap(BuildContext context, int index) {
     switch (index) {
       case 0:
-        // TODO: Navigate to Home
+        // Navigate to Home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChangeNotifierProvider(
+              create: (_) => ProfileViewModel(),
+              child: const HomeScreen(),
+            ),
+          ),
+        );
         break;
       case 1:
         // TODO: Navigate to Calendar

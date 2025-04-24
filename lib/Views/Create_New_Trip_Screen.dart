@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import '../Models/TripModel.dart';
 import '../Storage/TripStorage.dart';
+import '../Storage/ParticipantStorage.dart';
+
 // Firebase
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+/// A screen that allows users to create a new trip by selecting
+/// transportation mode, naming the trip, setting stops, and adding participants.
+///
+/// Upon submission, the created trip is passed back to the parent widget
+/// through the [onTripCreated] callback.
 class CreateNewTripScreen extends StatefulWidget {
+  /// Callback that triggers when a new trip is successfully created.
   final Function(TripModel) onTripCreated;
   const CreateNewTripScreen({super.key, required this.onTripCreated});
 
@@ -24,10 +32,15 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
   String tripStatus = '';
   String stop1 = '';
   String stop2 = '';
-  List<String> savedAddresses = ["123 Main St", "456 Elm St", "789 Maple St"];
+  List<String> savedAddresses = [
+    "123 Main St",
+    "456 Elm St",
+    "789 Maple St"
+  ]; // TODO: Replace with firebase
 
   var numberOfAllowedTrips = 10;
 
+  /// Updates the selected transportation mode (Drive, Bike, Walk).
   void selectTransport(String mode) {
     setState(() {
       selectedTransport = mode;
@@ -46,6 +59,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Transportation selection
             const Text(
               "I will (choose one):",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
@@ -61,11 +75,13 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
             ),
             const SizedBox(height: 24),
             Text(
+              // Display selected transport
               "Selected: $selectedTransport",
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 24),
             const Text(
+              // Trip Name Field
               "Trip Name",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
             ),
@@ -85,6 +101,52 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
                     EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
+            // Participants Section
+            const SizedBox(height: 24),
+            const Text(
+              "Participants",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children:
+                  ParticipantStorage.selectedParticipants.map((participant) {
+                return Chip(
+                  label: Text(participant['name'] ?? ''),
+                  avatar: CircleAvatar(
+                    backgroundImage:
+                        NetworkImage(participant['imageUrl'] ?? ''),
+                  ),
+                  deleteIcon: const Icon(Icons.close),
+                  onDeleted: () {
+                    setState(() {
+                      ParticipantStorage.selectedParticipants
+                          .remove(participant);
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Add Participant Button
+            ElevatedButton.icon(
+              onPressed: _showParticipantPicker,
+              icon: const Icon(Icons.person_add),
+              label: const Text("Add Participant"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+
+            // Stop 1 Selection
             const SizedBox(height: 24),
             const Text("Stop 1 (Pick-up Location)",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
@@ -110,6 +172,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
                 }
               },
             ),
+            // Stop 2 Selection
             const SizedBox(height: 24),
             const Text("Stop 2 (Drop-off Location)",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
@@ -135,6 +198,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
                 }
               },
             ),
+            // Submit Trip Button
             const SizedBox(height: 24),
             Center(
               child: ElevatedButton(
@@ -159,6 +223,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     );
   }
 
+  /// Displays a dialog allowing the user to manually enter an address.
   void _showManualAddressDialog(int stopNumber) {
     String tempAddress = '';
 
@@ -199,6 +264,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     );
   }
 
+  /// Validates the trip form and creates a new trip if all fields are filled.
   // TODO: Prompt something on the user's screen when they exceed the trip amount;
   // I made the function return a bool on whether or not they successfully added an trip to make the implementation easier.
   bool _submitTripRequest() {
@@ -244,6 +310,39 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     // Send trip request to firebase
     storeTripOnFirebase();
     return true;
+  }
+
+  /// Displays a bottom sheet allowing the user to select friends as participants.
+  void _showParticipantPicker() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ListView(
+          children: ParticipantStorage.mockUsers.map((user) {
+            bool alreadyAdded = ParticipantStorage.selectedParticipants
+                .any((p) => p['userID'] == user['userID']);
+
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundImage: NetworkImage(user['imageUrl'] ?? ''),
+              ),
+              title: Text(user['name'] ?? ''),
+              trailing: alreadyAdded
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : const Icon(Icons.add),
+              onTap: () {
+                if (!alreadyAdded) {
+                  setState(() {
+                    ParticipantStorage.selectedParticipants.add(user);
+                  });
+                }
+                Navigator.pop(context);
+              },
+            );
+          }).toList(),
+        );
+      },
+    );
   }
 
   // ******************* Firebase Methods ********************************
