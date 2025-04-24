@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_together_app/Storage/TripStorage.dart';
+import 'package:provider/provider.dart';
+import '../ViewModels/Profile_Screen_View_Model.dart';
 import '../Views/Profile_Screen_Setup.dart';
 import '../Views/Create_New_Trip_Screen.dart';
 import '../Models/TripModel.dart';
 import '../Widgets/TripCard.dart';
+import '../Views/FindFriendsScreen.dart';
+import '../Views/HomeScreen.dart';
 
 class MyTripsHomeScreen extends StatefulWidget {
   const MyTripsHomeScreen({super.key});
@@ -143,18 +147,30 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
   Widget _buildTabs() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: const [
-        Text(
+      children: [
+        const Text(
           "MATCH ME",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        Text(
+        const Text(
           "MY TRIPS",
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
         ),
-        Text(
-          "FIND FRIENDS",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FindFriendsScreen()),
+            );
+          },
+          child: const Text(
+            "FIND FRIENDS",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              decoration: TextDecoration.underline, // Optional styling
+            ),
+          ),
         ),
       ],
     );
@@ -163,7 +179,16 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
   void _handleNavTap(BuildContext context, int index) {
     switch (index) {
       case 0:
-      // TODO: Navigate to Home
+      // Navigate to Home
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChangeNotifierProvider(
+              create: (_) => ProfileViewModel(),
+              child: const HomeScreen(),
+            ),
+          ),
+        );
         break;
       case 1:
       // TODO: Navigate to Calendar
