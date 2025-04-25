@@ -1,5 +1,7 @@
 /// A model representing a trip created by the user.
 class TripModel {
+  final String tripKey;
+
   /// The name/title of the trip (e.g., "Morning School Run").
   final String tripName;
 
@@ -26,6 +28,7 @@ class TripModel {
 
   /// Creates a [TripModel] with the given trip information.
   TripModel({
+    required this.tripKey,
     required this.tripName,
     required this.stop1,
     required this.stop2,

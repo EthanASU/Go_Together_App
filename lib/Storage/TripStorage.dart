@@ -16,4 +16,11 @@ class TripStorage {
   ///
   /// Trips in this list are considered confirmed and ready for participation.
   static List<TripModel> scheduledTrips = [];
+
+  /// Clear all data off local object
+  /// Preferably on logout
+  static void ClearAll() {
+    pendingTrips.clear();
+    scheduledTrips.clear();
+  }
 }

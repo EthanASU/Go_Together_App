@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 
+import '../Storage/TripStorage.dart'; // Local Storage
 import '../Storage/UserStorage.dart'; // Local Storage
 import '../FirebaseInstance.dart'; // Remote Storage
 
@@ -128,7 +129,8 @@ class ProfileViewModel extends ChangeNotifier {
 
   Future<void> logout() async {
     await FirebaseInstance.Instance?.Logout(); // Logout of Firebase
-    UserStorage.ClearAll(); // Clear all local storage
+    UserStorage.ClearAll(); // Clear all user storage locally
+    TripStorage.ClearAll(); // Clear all trip storage locally
     notifyListeners();
   }
 }

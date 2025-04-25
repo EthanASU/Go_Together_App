@@ -470,6 +470,7 @@ class FirebaseInstance {
 
                 // Assuming TripModel has a constructor that allows direct setting of properties
                 TripModel newTrip = TripModel(
+                    tripKey: tripData['tripKey'] ?? "Unknown_Key",
                     tripName: tripData['tripName'] ?? "Unnamed Trip",
                     status: tripData['tripStatus'] ?? "Pending",
                     selectedTransport: tripData['transPrefs'] ?? "Pending",
@@ -495,4 +496,8 @@ class FirebaseInstance {
       print("Error fetching user address data: $e");
     }
   }
+
+  /// ************** Removal Methods **************
+  /// Remove Trip from Firebase
+  Future<void> removeTripFromFirebase(String tripKey) async {}
 }

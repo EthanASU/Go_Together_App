@@ -154,8 +154,10 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
         setState(() {
           if (isPending) {
             TripStorage.pendingTrips.remove(trip);
+            // TODO: Remove Trip From Firebase
           } else {
             TripStorage.scheduledTrips.remove(trip);
+            // TODO: Remove Trip From Firebase
           }
         });
       },

@@ -283,7 +283,12 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     print("Stop 1: $stop1");
     print("Stop 2: $stop2");
 
+    int tripNum =
+        TripStorage.scheduledTrips.length + TripStorage.pendingTrips.length;
+    String tripKey = "trip" + tripNum.toString();
+
     TripModel trip = new TripModel(
+        tripKey: tripKey,
         tripName: tripName,
         stop1: stop1,
         stop2: stop2,
@@ -292,6 +297,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     // Save trip to local storage
     widget.onTripCreated(
       TripModel(
+        tripKey: tripKey,
         tripName: tripName,
         stop1: stop1,
         stop2: stop2,
