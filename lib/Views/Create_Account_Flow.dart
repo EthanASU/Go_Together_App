@@ -116,7 +116,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           ),
                         ),
                         controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 100),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 100),
                       ),
                       // Student Option
                       RadioListTile<String>(
@@ -133,7 +134,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           ),
                         ),
                         controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 100),
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 100),
                       ),
                     ],
                   ),
@@ -160,11 +162,12 @@ class CreateAccountFlowScreen extends StatelessWidget {
                           value: viewModel.selectedSchool,
                           isExpanded: true,
                           decoration: InputDecoration(
-                            contentPadding:
-                              const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
                             border: OutlineInputBorder(),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.grey.shade300),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
                             ),
                           ),
                           onChanged: (newValue) {
@@ -175,10 +178,12 @@ class CreateAccountFlowScreen extends StatelessWidget {
                               value: null,
                               child: Text(
                                 "-Select School-",
-                                style: const TextStyle(fontFamily: 'Poppins', color: Colors.grey),
+                                style: const TextStyle(
+                                    fontFamily: 'Poppins', color: Colors.grey),
                               ),
                             ),
-                            ...viewModel.schools.map<DropdownMenuItem<String>>((String value) {
+                            ...viewModel.schools
+                                .map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(
@@ -207,7 +212,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                             children: [
                               const Text(
                                 'First name',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 5),
                               TextFormField(
@@ -226,7 +232,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                             children: [
                               const Text(
                                 'Last name',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 5),
                               TextFormField(
@@ -243,7 +250,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Student ID                                                                       ',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -255,7 +263,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Email address                                                               ',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -267,7 +276,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Phone number                                                                ',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -319,7 +329,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Password',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -332,7 +343,8 @@ class CreateAccountFlowScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     const Text(
                       'Confirm Password',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
@@ -385,7 +397,9 @@ class CreateAccountFlowScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      viewModel.currentStep > 0 ? 'Back' : ' Back to Login ', // Change button text dynamically
+                      viewModel.currentStep > 0
+                          ? 'Back'
+                          : ' Back to Login ', // Change button text dynamically
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -394,32 +408,40 @@ class CreateAccountFlowScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                            if (viewModel.currentStep < viewModel.totalSteps - 1) {
-                              viewModel.nextStep();
-                            } else {
-                              bool success = await viewModel.createAccountOnFirebase(); // Ensure this method returns a success boolean
-                              if (success) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => ProfileSetUp()),
-                                );
-                              } else {
-                                // Handle failure case (optional)
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Account creation failed. Please try agin')),
-                                );
-                              }
-                            }
-                          },
+                      if (viewModel.currentStep < viewModel.totalSteps - 1) {
+                        viewModel.nextStep();
+                      } else {
+                        bool success = await viewModel
+                            .CreateAccount(); // Ensure this method returns a success boolean
+                        if (success) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ProfileSetUp()),
+                          );
+                        } else {
+                          // Handle failure case (optional)
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(
+                                    'Account creation failed. Please try agin')),
+                          );
+                        }
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: viewModel.isStepValid() ? Colors.green.shade400 : Colors.grey,
+                      backgroundColor: viewModel.isStepValid()
+                          ? Colors.green.shade400
+                          : Colors.grey,
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: Text(
-                      viewModel.currentStep < viewModel.totalSteps - 1 ? 'Next' : 'Go',
+                      viewModel.currentStep < viewModel.totalSteps - 1
+                          ? 'Next'
+                          : 'Go',
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),

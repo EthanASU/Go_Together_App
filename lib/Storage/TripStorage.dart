@@ -5,6 +5,8 @@ import '../Models/TripModel.dart';
 /// Stores pending and scheduled trips locally.
 /// Later, this can be extended to sync with Firebase.
 class TripStorage {
+  static int NumberOfAllowedTrips = 10;
+
   /// A list of trips that are currently awaiting approval or matching.
   ///
   /// Trips in this list typically have a status of "Pending".
@@ -14,4 +16,11 @@ class TripStorage {
   ///
   /// Trips in this list are considered confirmed and ready for participation.
   static List<TripModel> scheduledTrips = [];
+
+  /// Clear all data off local object
+  /// Preferably on logout
+  static void ClearAll() {
+    pendingTrips.clear();
+    scheduledTrips.clear();
+  }
 }
