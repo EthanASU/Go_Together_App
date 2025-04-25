@@ -1,28 +1,32 @@
 import 'package:flutter/material.dart';
 
+// Entry point of the application
 void main() {
   runApp(MyApp());
 }
 
+/// The root widget of the application
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false, // Disable debug banner
       title: 'Figma UI',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.green,   // Set the primary theme color
       ),
-      home: HomeScreen(),
+      home: HomeScreen(),  // Home page of the app
     );
   }
 }
 
+/// A stateful widget to hold and manage UI states
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
+ // Checkbox options and their states
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, bool> checkBoxValues = {
     'Carpooling': false,
@@ -32,10 +36,12 @@ class _HomeScreenState extends State<HomeScreen> {
     'Someone to drive my student': false,
   };
 
+  // Dropdown selections
   String? selectedDistance;
   String? selectedStartingPoint;
   String? selectedDestination;
 
+  // Dropdown menu options
   final List<String> distances = ['1 mile', '5 miles', '10 miles', '20 miles'];
   final List<String> locations = ['School', 'Library', 'Mall', 'Park'];
 
@@ -59,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Week selection row
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -68,6 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             SizedBox(height: 10),
+
+             // Buttons for AI Matching and Manual Search
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -84,6 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             SizedBox(height: 20),
+
+            // Selection Form Section
             _buildOutlinedSection(
               child: Column(
                 children: [
@@ -103,6 +114,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SizedBox(height: 20),
+
+            // Search button
             Center(
               child: ElevatedButton(
                 onPressed: () {},
@@ -116,6 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+
+       // Bottom navigation bar
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -130,6 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Builds a decorated container for grouping form fields
   Widget _buildOutlinedSection({required Widget child}) {
     return Container(
       decoration: BoxDecoration(
@@ -141,6 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Builds section titles with a description subtitle
   Widget _buildSectionTitle(String title, String subtitle) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -154,6 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+   /// Builds a checkbox with a label
   Widget _buildCheckbox(String label) {
     return Row(
       children: [
@@ -178,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Builds a dropdown form field with given options
   Widget _buildDropdown(String title, String hint, List<String> items, String? selectedItem, Function(String?) onChanged) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
