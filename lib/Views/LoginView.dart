@@ -90,7 +90,6 @@ class MyHomePage extends StatelessWidget {
                         style: TextStyle(color: Colors.red, fontSize: 14),
                       ),
                     ),
-
                   if (viewModel.isLoading)
                     CircularProgressIndicator()
                   else
@@ -102,15 +101,19 @@ class MyHomePage extends StatelessWidget {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: viewModel.canSignIn ? Colors.green : Colors.transparent,
-                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                        backgroundColor: viewModel.canSignIn
+                            ? Colors.green
+                            : Colors.transparent,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
                       ),
                       child: Text(
                         "Sign in",
-                        style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.bold),
                       ),
                     ),
                   SizedBox(height: 20),
@@ -121,18 +124,18 @@ class MyHomePage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ChangeNotifierProvider(
-                            create: (_) => CreateAccountFlowViewModel(), // Provide the required ViewModel
+                            create: (_) =>
+                                CreateAccountFlowViewModel(), // Provide the required ViewModel
                             child: const CreateAccountFlowScreen(),
                           ),
                         ),
                       );
                     },
-                    child: Text(
-                        "Don't have an account? Create an account here!",
-                        style: TextStyle(
-                          fontSize: 16,
-                        )
-                    ),
+                    child:
+                        Text("Don't have an account? Create an account here!",
+                            style: TextStyle(
+                              fontSize: 16,
+                            )),
                   ),
                 ],
               ),

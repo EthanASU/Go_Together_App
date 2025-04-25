@@ -9,6 +9,7 @@ import '../Views/profile_screen_setup.dart';
 import '../Widgets/address_card.dart';
 import 'package:flutter/services.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
+import '../Storage/UserStorage.dart';
 
 //View for the three tabs in the profile page section (personal, address, contact)
 class ProfileCompletionScreen extends StatelessWidget {
@@ -41,14 +42,13 @@ class ProfileCompletionScreen extends StatelessWidget {
                       mainViewModel
                           .updatePhoneNumber(personalViewModel.phoneNumber);
                       // Add this code to update addresses
-                      if (personalViewModel.addresses.isNotEmpty) {
-                        mainViewModel
-                            .updateAddresses(personalViewModel.addresses);
+                      if (UserStorage.Addresses.isNotEmpty) {
+                        mainViewModel.updateAddresses(UserStorage.Addresses);
                       }
                       // Add this code to update emergency contacts
-                      if (personalViewModel.emergencyContacts.isNotEmpty) {
+                      if (UserStorage.EmergencyContacts.isNotEmpty) {
                         mainViewModel.updateEmergencyContacts(
-                            personalViewModel.emergencyContacts);
+                            UserStorage.EmergencyContacts);
                       }
 
                       Navigator.pushReplacement(
@@ -545,7 +545,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                     else if (viewModel.TabIndex == 1) ...[
                       if (!viewModel.showAddressForm) ...[
                         // Show existing addresses
-                        ...viewModel.addresses.map((address) {
+                        ...UserStorage.Addresses.map((address) {
                           return Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -645,7 +645,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  viewModel.addresses.isEmpty
+                                  UserStorage.Addresses.isEmpty
                                       ? 'Add address'
                                       : 'Add another address',
                                   style: TextStyle(
@@ -671,9 +671,10 @@ class ProfileCompletionScreen extends StatelessWidget {
                     else if (viewModel.TabIndex == 2) ...[
                       if (!viewModel.showContactForm) ...[
                         // Store Created Contacts
-                        ...viewModel.emergencyContacts.map((contact) {
+                        ...UserStorage.EmergencyContacts.map((contact) {
                           int index =
-                              viewModel.emergencyContacts.indexOf(contact) + 1;
+                              UserStorage.EmergencyContacts.indexOf(contact) +
+                                  1;
                           return Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -768,7 +769,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  viewModel.addresses.isEmpty
+                                  UserStorage.Addresses.isEmpty
                                       ? 'Add emergency contact'
                                       : 'Add emergency contact',
                                   style: TextStyle(
@@ -784,7 +785,7 @@ class ProfileCompletionScreen extends StatelessWidget {
                         ),
 
                         // Warning message - only show if no contacts
-                        if (viewModel.emergencyContacts.isEmpty) ...[
+                        if (UserStorage.EmergencyContacts.isEmpty) ...[
                           Container(
                             padding: const EdgeInsets.all(16),
                             child: Row(
@@ -805,7 +806,8 @@ class ProfileCompletionScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                        ] else if (viewModel.emergencyContacts.length == 1) ...[
+                        ] else if (UserStorage.EmergencyContacts.length ==
+                            1) ...[
                           // New warning for single contact
                           Container(
                             padding: const EdgeInsets.all(16),

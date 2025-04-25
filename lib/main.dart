@@ -10,6 +10,7 @@ import 'Widgets/My_Trips_Top_Navigation_Bar.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
 
 // Firebase Imports
+import 'FirebaseInstance.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
@@ -20,6 +21,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Create singleton reference
+  FirebaseInstance instance = new FirebaseInstance();
+  FirebaseInstance.Instance = instance;
 
   runApp(
     MultiProvider(

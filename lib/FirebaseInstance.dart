@@ -1,0 +1,365 @@
+import '../Storage/UserStorage.dart';
+// Firebase Imports
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class FirebaseInstance {
+  // Singleton Reference
+  static FirebaseInstance? Instance;
+
+  final firebaseAuth =
+      FirebaseAuth.instance; // Reference to the Firebase Auth Object
+  final firestoreDB =
+      FirebaseFirestore.instance; // Reference to the Firestore Database
+
+  /// ************** Authorization Methods **************
+  Future<bool> Login(String studentId, String password) async {
+    try {
+      String email = studentId;
+
+      // If the input isn't and email, assume it's a Student ID and fetch corresponding email from Firestore
+      if (!studentId.contains('@')) {
+        QuerySnapshot querySnapshot = await firestoreDB
+            .collection('users')
+            .where('studentNum', isEqualTo: studentId)
+            .limit(1)
+            .get();
+
+        if (querySnapshot.docs.isEmpty) {
+          throw Exception("No account found with this Student ID.");
+        }
+
+        email =
+            querySnapshot.docs.first['email']; // Get the email from Firestore
+      }
+
+      // Firebase Authentication (Email & Password)
+      UserCredential userCredential =
+          await firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      print("Login successful! User ID: ${userCredential.user?.uid}");
+      return true;
+    } catch (e) {
+      print("Login failed: $e");
+      return false;
+    }
+  }
+
+  // TODO: Handle Email and Phone number verification
+  Future<bool> CreateAccountOnFirebase() async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: UserStorage.Email,
+        password: UserStorage.Password,
+      );
+
+      // Store basic user info in details in Firestore
+      await firestoreDB.collection('users').doc(userCredential.user!.uid).set({
+        'firstName': UserStorage.FirstName,
+        'lastName': UserStorage.LastName,
+        'email': UserStorage.Email,
+        'phoneNumber': UserStorage.PhoneNumber,
+        'studentID': UserStorage.StudentNumber,
+        'school': UserStorage.School
+      });
+
+      // Initialize Transportation Prefs in DB; To be updated in Profile Personal View Model
+      await firestoreDB
+          .collection('transPrefs')
+          .doc(userCredential.user!.uid)
+          .set({
+        'Bike': false,
+        'Carpool': false,
+        'Walk': false,
+      });
+
+      return true; // Account created
+    } catch (e) {
+      print("Error creating account: $e");
+      return false; // Account creation failed
+    }
+  }
+
+  /// ************** Storage Methods **************
+  /// Store Phone Number in Firebase
+  Future<void> storePhoneNumberOnFirebase(String phoneNum) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
+
+    // Store phone as a pair to parse database
+    final data = {"phoneNumber": phoneNum};
+
+    // Store in database
+    await firestoreDB
+        .collection('users') // Document "users"
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    print("User phone number stored in db as $phoneNum");
+  }
+
+  /// Store Email in Firebase
+  Future<void> storeEmailOnFirebase(String email) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
+
+    // Store email as a pair to parse database
+    final data = {"email": email};
+
+    // Store in database
+    await firestoreDB
+        .collection('users') // Document "users"
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    print("User email stored in db as $email");
+  }
+
+  /// Store transportation prefs in Firebase
+  Future<void> storeTransportationPrefsOnFirebase(
+      String type, bool setting) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
+
+    // Store pref as a pair to parse database
+    final data = {type: setting};
+
+    // Store in database
+    await firestoreDB
+        .collection('transPrefs') // Document "transPrefs
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    print("User transportation prefs $type stored in db as $setting");
+  }
+
+  /// Store a user address on Firebase
+  Future<void> storeAddressOnFirebase(Map<String, dynamic> addressInfo) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
+
+    // Generate and store new Address ID
+    String randomId =
+        firestoreDB.collection("users").doc().id; // Generate random ID
+
+    // Store the address in the right user data entry
+    int addressNum = UserStorage.Addresses.length;
+    String addressKey = "address" + addressNum.toString();
+
+    // Store address as a pair to parse database
+    final data = {addressKey: randomId};
+
+    // Store in database
+    await firestoreDB
+        .collection('users') // Document "users"
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    // Generate and store address with ID
+    await firestoreDB.collection('addresses').doc(randomId).set({
+      'streetAddress': addressInfo['streetAddress'],
+      'aptSuite': addressInfo['aptSuite'],
+      'city': addressInfo['city'],
+      'state': addressInfo['state'],
+      'zipCode': addressInfo['zipCode'],
+      'name': addressInfo['name'],
+      'isDefault': addressInfo['isDefault']
+    });
+
+    print("User address $addressKey stored in db as $randomId");
+  }
+
+  /// Store a user contact on Firebase
+  Future<void> storeContactOnFirebase(Map<String, dynamic> contactInfo) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
+
+    // Generate and store new Contact ID
+    String randomId =
+        firestoreDB.collection("users").doc().id; // Generate random ID
+
+    // Store the contact in the right user data entry
+    int contactNum = UserStorage.EmergencyContacts.length;
+    String contactKey = "contact" + contactNum.toString();
+
+    // Store contact as a pair to parse database
+    final data = {contactKey: randomId};
+
+    // Store in database
+    await firestoreDB
+        .collection('users') // Document "users"
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    // Generate and store contact with ID
+    await firestoreDB.collection('contacts').doc(randomId).set({
+      'firstName': contactInfo['firstName'],
+      'lastName': contactInfo['lastName'],
+      'phone': contactInfo['phone'],
+      'relationship': contactInfo['relationship']
+    });
+
+    print("User contact $contactKey stored in db as $randomId");
+  }
+
+  /// ************** Retrieval Methods **************
+
+  // Fetch All Information About User From Firebase
+  // Preferably used upon login
+  Future<void> fetchAllFromFirebase() async {
+    await fetchTransportationPrefsFromFirebase();
+    await fetchAddressesFromFirebase();
+    await fetchContactsFromFirebase();
+  }
+
+  /// Fetch transportation prefs from Firebase
+  Future<void> fetchTransportationPrefsFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser; // User Reference
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('transPrefs')
+            .doc(user.uid)
+            .get();
+
+        // Check if a document exists for the user's transportation prefs
+        if (userDoc.exists && userDoc.data() != null) {
+          final data = userDoc.data() as Map<String, dynamic>;
+
+          bool bike = data['Bike'] ?? false; // Default to false if missing
+          UserStorage.BikePref = bike;
+
+          //setTransportationMode('Bike', bike);
+
+          bool carpool =
+              data['Carpool'] ?? false; // Default to false if missing
+          UserStorage.DrivePref = carpool;
+
+          //setTransportationMode('Carpool', carpool);
+
+          bool walk = data['Walk'] ?? false; // Default to false if missing
+          UserStorage.WalkPref = walk;
+          //setTransportationMode('Walk', walk);
+
+          //notifyListeners();
+        }
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
+  }
+
+  /// Fetch all user addresses from Firebase
+  Future<void> fetchAddressesFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser; // User Reference
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance // Get the User's data
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          // Check if the user exists
+          final userData = userDoc.data() as Map<String, dynamic>;
+
+          // Iterate through address IDs and update them sequentially in the "Address" tab
+          var addressIDs =
+              List<String>.filled(UserStorage.NumOfAllowedAddresses, "Null");
+          for (int i = 0; i < (addressIDs.length + 1); i++) {
+            String addressKey = "address" + i.toString();
+            String addressID = // Get the addressID for each address
+                userData[addressKey] ?? "Null"; // Default to Null if missing
+
+            if (addressID != "Null") {
+              // Check if the ID is valid
+              // Update Address
+              DocumentSnapshot addressDoc =
+                  await FirebaseFirestore.instance // Get the address's data
+                      .collection('addresses')
+                      .doc(addressID)
+                      .get();
+
+              if (addressDoc.exists && addressDoc.data() != null) {
+                // Check if the user exists
+                final addressData = addressDoc.data() as Map<String, dynamic>;
+
+                // Add address to list of addresses
+                final address = {
+                  'streetAddress':
+                      addressData['streetAddress'] ?? "Unknown_Street",
+                  'aptSuite': addressData['aptSuite'] ?? "",
+                  'city': addressData['city'] ?? "Unknown_City",
+                  'state': addressData['state'] ?? "Unknown_State",
+                  'zipCode': addressData['zipCode'] ?? "Unknown_Zip",
+                  'name': addressData['name'] ?? "Saved Address",
+                  'isDefault': addressData['isDefault'] ?? false
+                };
+
+                UserStorage.Addresses.add(address);
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching user address data: $e");
+    }
+  }
+
+  /// Fetch all user contacts from Firebase
+  Future<void> fetchContactsFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser; // User Reference
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance // Get the User's data
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          // Check if the user exists
+          final userData = userDoc.data() as Map<String, dynamic>;
+
+          // Iterate through contact IDs and update them sequentially in the "Contact" tab
+          var contactIDs =
+              List<String>.filled(UserStorage.NumOfAllowedContacts, "Null");
+          for (int i = 0; i < (contactIDs.length + 1); i++) {
+            String contactKey = "contact" + i.toString();
+            String contactID = // Get the contactID for each address
+                userData[contactKey] ?? "Null"; // Default to Null if missing
+
+            if (contactID != "Null") {
+              // Check if the ID is valid
+              // Update Contact
+              DocumentSnapshot contactDoc =
+                  await FirebaseFirestore.instance // Get the address's data
+                      .collection('contacts')
+                      .doc(contactID)
+                      .get();
+
+              if (contactDoc.exists && contactDoc.data() != null) {
+                // Check if the user exists
+                final contactData = contactDoc.data() as Map<String, dynamic>;
+
+                // Add contact to list of contacts
+                final contact = {
+                  'firstName': contactData['firstName'] ?? "Unknown_FirstName",
+                  'lastName': contactData['lastName'] ?? "Unknown_LastName",
+                  'phone': contactData['phone'] ?? "???-???-????",
+                  'relationship':
+                      contactData['relationship'] ?? "Other(specify)"
+                };
+
+                UserStorage.EmergencyContacts.add(contact);
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching user contact data: $e");
+    }
+  }
+}

@@ -1,9 +1,10 @@
 import 'dart:ffi';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../Models/step_data.dart';
+
+import '../Storage/UserStorage.dart'; // Local Storage
+import '../FirebaseInstance.dart'; // Remote Storage
 
 class Account {
   final String firstName;
@@ -27,11 +28,6 @@ class Account {
 }
 
 class CreateAccountFlowViewModel extends ChangeNotifier {
-  final firebaseAuth =
-      FirebaseAuth.instance; // Reference to the Firebase Auth Object
-  final firestoreDB =
-      FirebaseFirestore.instance; // Reference to the Firestore Database
-
   int _currentStep = 0;
   final int totalSteps = 4;
 
@@ -64,6 +60,7 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
   // Check if password match
   bool get passwordsMatch => password.isNotEmpty && password == confirmPassword;
 
+  // Possibly unused method below
   // Create a new User object
   Account createUser() {
     // Perform checks on user credentials to make sure nothing critical is missing
@@ -78,82 +75,6 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
         password: password);
 
     return account;
-  }
-
-  // Store new user in Firebase
-  Future<void> passUserToFirebase(Account acc) async {
-    // Assign Other User Properties
-    User? user = null;
-
-    try {
-      // Create User Email and Password
-      final UserCredential userCredential =
-          await firebaseAuth.createUserWithEmailAndPassword(
-              email: acc.emailAddress, password: acc.password);
-
-      //  TODO: Verify Phone Number
-      /* Attempt at adding phone number to account
-      user = userCredential.user;
-      if (user != null) {
-        // Update Display Name
-        String displayName = "${acc.firstName} ${acc.lastName}";
-        await user.updateDisplayName(displayName);
-
-        // Verify the phone number before it can be applied to the account
-        await FirebaseAuth.instance.verifyPhoneNumber(
-          phoneNumber: phoneNumber,
-          verificationCompleted: (PhoneAuthCredential credential) async {
-            await FirebaseAuth.instance.signInWithCredential(credential);
-          },
-          verificationFailed: (FirebaseAuthException e) {
-            if (e.code == 'invalid-phone-number') {
-              print('The provided phone number is not valid.');
-            }
-          },
-          codeSent: (String verificationId, int? resendToken) async {
-            // Update the UI - wait for the user to enter the SMS code
-            String smsCode = 'xxxx';
-
-            // Create a PhoneAuthCredential with the code
-            PhoneAuthCredential credential = PhoneAuthProvider.credential(
-                verificationId: verificationId, smsCode: smsCode);
-
-            // Sign the user in (or link) with the credential
-            await FirebaseAuth.instance.signInWithCredential(credential);
-          },
-          codeAutoRetrievalTimeout: (String verificationId) {
-            // Auto-resolution timed out...
-          },
-        );
-        */
-      // TODO: Verify Email
-    } catch (e) {
-      print("Error creating account on Firebase");
-    } finally {
-      print(user);
-    }
-  }
-
-  void storeUserDataInFirestore(Account acc) {
-    final accInfo = <String, dynamic>{
-      "first": firstName,
-      "last": lastName,
-      "studentNum": studentNumber,
-      "email": emailAddress,
-      "phone": phoneNumber,
-      "password": password,
-      "drivePref": false,
-      "bikePref": false,
-      "walkPref": false
-    };
-
-    try {
-      firestoreDB.collection("userInfo").add(accInfo).then(
-          (DocumentReference doc) =>
-              print('DocumentSnapshot added with ID: ${doc.id}'));
-    } catch (e) {
-      print("Error adding document: $e");
-    }
   }
 
   // Validation
@@ -255,41 +176,25 @@ class CreateAccountFlowViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> createAccountOnFirebase() async {
-    try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailAddress,
-        password: password,
-      );
+  // ******************** Firebase Methods *************************
+  // Store new user in Firebase
+  Future<bool> CreateAccount() async {
+    // Assign Other User Properties
 
-      // Store basic user info in details in Firestore
-      await firestoreDB.collection('users').doc(userCredential.user!.uid).set({
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': emailAddress,
-        'phoneNumber': phoneNumber,
-        'studentID': studentNumber,
-        'school': _selectedSchool,
-        'address1': "Null",
-        'address2': "Null",
-        'address3': "Null"
-      });
+    // Store basic user information locally
+    // in a static class
+    UserStorage.FirstName = firstName;
+    UserStorage.LastName = lastName;
+    UserStorage.StudentNumber = int.parse(studentNumber);
+    UserStorage.Email = emailAddress;
+    UserStorage.PhoneNumber = phoneNumber;
+    UserStorage.Password = password;
 
-      // Initialize Transportation Prefs in DB; To be updated in Profile Personal View Model
-      await firestoreDB
-          .collection('transPrefs')
-          .doc(userCredential.user!.uid)
-          .set({
-        'Bike': false,
-        'Carpool': false,
-        'Walk': false,
-      });
-
-      return true; // Account created
-    } catch (e) {
-      print("Error creating account: $e");
-      return false; // Account creation failed
+    if (FirebaseInstance.Instance != null) {
+      return await FirebaseInstance.Instance!.CreateAccountOnFirebase();
+    } else {
+      print("Error: FirebaseInstance is null");
+      return false;
     }
   }
 }

@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import '../Views/Profile_Screen_Setup.dart';
-// Firebase Imports
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
+import '../Storage/UserStorage.dart'; // Local Storage
+import '../FirebaseInstance.dart'; // Remote Storage
 
 class LoginViewModel extends ChangeNotifier {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  User? currentUser = null;
-
   String _studentId = '';
   String _password = '';
   String _errorMessage = '';
@@ -30,41 +26,26 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ********************** Firebase Methods *************************
   Future<void> login(BuildContext context) async {
     if (!canSignIn) return;
 
     _isLoading = true;
     notifyListeners();
 
-    try {
-      String email = studentId;
+    bool result = false;
+    if (FirebaseInstance.Instance != null) {
+      result = await FirebaseInstance.Instance!.Login(studentId, password);
+    } else {
+      print("Error: FirebaseInstance is null");
+      result = false;
+    }
 
-      // If the input isn't and email, assume it's a Student ID and fetch corresponding email from Firestore
-      if (!studentId.contains('@')) {
-        QuerySnapshot querySnapshot = await _firestore
-            .collection('users')
-            .where('studentNum', isEqualTo: studentId)
-            .limit(1)
-            .get();
-
-        if (querySnapshot.docs.isEmpty) {
-          throw Exception("No account found with this Student ID.");
-        }
-
-        email =
-            querySnapshot.docs.first['email']; // Get the email from Firestore
-      }
-
-      // Firebase Authentication (Email & Password)
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      print("Login successful! User ID: ${userCredential.user?.uid}");
+    if (result) {
+      // Fetch all user data from db in one call
+      await FirebaseInstance.Instance?.fetchAllFromFirebase();
       Navigator.pushReplacementNamed(context, '/profile');
-    } catch (e) {
-      print("Login failed: $e");
+    } else {
       _errorMessage = "Invalid credentials. Please try again.";
       notifyListeners();
     }
