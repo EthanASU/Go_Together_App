@@ -81,6 +81,23 @@ class _TripCardState extends State<TripCard> {
                 Text("20 minutes until meet up!", style: TextStyle(fontSize: 14)),
               ],
             ),
+            if (trip.participants.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Text("Participants:",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 8,
+                children: trip.participants.map((p) {
+                  return Chip(
+                    label: Text(p['name'] ?? ''),
+                    avatar: CircleAvatar(
+                      backgroundImage: NetworkImage(p['imageUrl'] ?? ''),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
             const SizedBox(height: 12),
             Row(
               children: const [
