@@ -1,5 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:go_together_app/Storage/TripStorage.dart';
 import 'package:provider/provider.dart';
 import '../ViewModels/Profile_Screen_View_Model.dart';
 import '../Views/Profile_Screen_Setup.dart';
@@ -10,6 +10,9 @@ import '../Widgets/TripCard.dart';
 import '../Widgets/My_Trips_Top_Navigation_Bar.dart';
 import '../Views/FindFriendsScreen.dart';
 import '../Views/HomeScreen.dart';
+
+import '../Storage/TripStorage.dart'; // Local Storage
+import '../FirebaseInstance.dart'; // Remote Storage
 
 class MyTripsHomeScreen extends StatefulWidget {
   const MyTripsHomeScreen({super.key});
@@ -32,7 +35,7 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
           child: Column(
             children: [
               // Tabs
-              /// ******* Deleted on Ethan's Side
+              /// ******* Ethan's Top Navigation Bar
               // Use the new TopNavigationBar widget
               TopNavigationBar(
                 selectedIndex: _selectedTabIndex,
@@ -152,13 +155,14 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
       trip: trip,
       onDelete: () {
         setState(() {
+          String tripKey = trip.tripKey; // Store key before deletion
           if (isPending) {
             TripStorage.pendingTrips.remove(trip);
-            // TODO: Remove Trip From Firebase
           } else {
             TripStorage.scheduledTrips.remove(trip);
-            // TODO: Remove Trip From Firebase
           }
+          // Remove Trip From Firebase
+          FirebaseInstance.Instance?.removeTripFromFirebase(tripKey);
         });
       },
     );

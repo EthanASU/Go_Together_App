@@ -153,7 +153,7 @@ class FirebaseInstance {
         firestoreDB.collection("users").doc().id; // Generate random ID
 
     // Store the address in the right user data entry
-    int addressNum = UserStorage.Addresses.length;
+    int addressNum = UserStorage.Addresses.length - 1;
     String addressKey = "address" + addressNum.toString();
 
     // Store address as a pair to parse database
@@ -188,7 +188,7 @@ class FirebaseInstance {
         firestoreDB.collection("users").doc().id; // Generate random ID
 
     // Store the contact in the right user data entry
-    int contactNum = UserStorage.EmergencyContacts.length;
+    int contactNum = UserStorage.EmergencyContacts.length - 1;
     String contactKey = "contact" + contactNum.toString();
 
     // Store contact as a pair to parse database
@@ -221,7 +221,7 @@ class FirebaseInstance {
 
     // The next trip number is the total number of trips
     int tripNum =
-        TripStorage.scheduledTrips.length + TripStorage.pendingTrips.length;
+        TripStorage.scheduledTrips.length + TripStorage.pendingTrips.length - 1;
     String tripKey = "trip" + tripNum.toString();
 
     // Store trip as a pair to parse database
@@ -235,6 +235,7 @@ class FirebaseInstance {
 
     // Generate and store contact with ID
     await firestoreDB.collection('trips').doc(randomId).set({
+      'tripKey': trip.tripKey,
       'tripName': trip.tripName,
       'transPrefs': trip.selectedTransport,
       'tripStatus': trip.status,
@@ -499,5 +500,52 @@ class FirebaseInstance {
 
   /// ************** Removal Methods **************
   /// Remove Trip from Firebase
-  Future<void> removeTripFromFirebase(String tripKey) async {}
+  Future<void> removeTripFromFirebase(String tripKey) async {
+    print("Starting trip deletion from backend...");
+    try {
+      User? user = FirebaseAuth.instance.currentUser; // User Reference
+      if (user != null) {
+        print("user found");
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance // Get the User's data
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          print("user doc found");
+          // Check if the user exists
+          final userData = userDoc.data() as Map<String, dynamic>;
+
+          // Get the tripID for the trip we want to delete
+          String tripID =
+              userData[tripKey] ?? "Null"; // Default to Null if missing
+
+          print("tripKey = " + tripKey);
+
+          if (tripID != "Null") {
+            print("tripID not null");
+            // Check if the ID is valid
+            // Delete the trip document directly
+            await FirebaseFirestore.instance
+                .collection('trips')
+                .doc(tripID)
+                .delete();
+
+            // Remove tripID from user document
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .update({tripKey: FieldValue.delete()});
+
+            // TODO: Update all keys to make sure they are in sequential order
+
+            print("Trip deleted from Firestore successfully!");
+          }
+        }
+      }
+    } catch (e) {
+      print("Error deleting trip data: $e");
+    }
+  }
 }
