@@ -11,10 +11,6 @@ import '../Widgets/My_Trips_Top_Navigation_Bar.dart';
 import '../Views/FindFriendsScreen.dart';
 import '../Views/HomeScreen.dart';
 
-// Firebase
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 class MyTripsHomeScreen extends StatefulWidget {
   const MyTripsHomeScreen({super.key});
 
@@ -28,15 +24,6 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
   bool showScheduled = true;
   bool showPending = true;
   int _selectedTabIndex = 1;
-
-  // Maximum number of trips Firebase can hold for one account
-  int numberOfAllowedTrips = 10;
-
-  _MyTripsHomeScreenState() // Constructor
-  {
-    // Fetch Trips From Firebase
-    fetchTripsFromFirebase();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -272,70 +259,6 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
           MaterialPageRoute(builder: (_) => const ProfileSetUp()),
         );
         break;
-    }
-  }
-
-  // *************** Firebase Methods **************
-  /// Fetch all user trips from Firebase at once
-  Future<void> fetchTripsFromFirebase() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser; // User Reference
-      if (user != null) {
-        DocumentSnapshot userDoc =
-            await FirebaseFirestore.instance // Get the User's data
-                .collection('users')
-                .doc(user.uid)
-                .get();
-
-        if (userDoc.exists && userDoc.data() != null) {
-          // Check if the user exists
-          final userData = userDoc.data() as Map<String, dynamic>;
-
-          // Iterate through trip IDs and update them sequentially in the trip screen
-          var tripIDs = List<String>.filled(numberOfAllowedTrips, "Null");
-          for (int i = 0; i < (tripIDs.length + 1); i++) {
-            String tripKey = "trip" + i.toString();
-            String tripID = // Get the tripID for each address
-                userData[tripKey] ?? "Null"; // Default to Null if missing
-
-            if (tripID != "Null") {
-              // Check if the ID is valid
-              // Update Trip
-              DocumentSnapshot tripDoc =
-                  await FirebaseFirestore.instance // Get the trip's data
-                      .collection('trips')
-                      .doc(tripID)
-                      .get();
-
-              if (tripDoc.exists && tripDoc.data() != null) {
-                // Check if the user exists
-                final tripData = tripDoc.data() as Map<String, dynamic>;
-
-                // Assuming TripModel has a constructor that allows direct setting of properties
-                TripModel newTrip = TripModel(
-                    tripName: tripData['tripName'] ?? "Unnamed Trip",
-                    status: tripData['tripStatus'] ?? "Pending",
-                    selectedTransport: tripData['transPrefs'] ?? "Pending",
-                    stop1: tripData['stop1'] ?? "Unknown_Stop",
-                    stop2: tripData['stop2'] ?? "Unknown_Stop");
-
-                // Store trip based on status
-                if (newTrip.status == "Scheduled") {
-                  scheduledTrips.add(newTrip);
-                  print(
-                      "Scheduled Trip retrieved ${newTrip.tripName} from Firestore db!");
-                } else {
-                  pendingTrips.add(newTrip);
-                  print(
-                      "Pending Trip retrieved ${newTrip.tripName} from Firestore db!");
-                }
-              }
-            }
-          }
-        }
-      }
-    } catch (e) {
-      print("Error fetching user address data: $e");
     }
   }
 }

@@ -1,4 +1,8 @@
 import '../Storage/UserStorage.dart';
+import '../Storage/TripStorage.dart';
+import '../Storage/ParticipantStorage.dart';
+import '../Models/TripModel.dart';
+
 // Firebase Imports
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -207,6 +211,42 @@ class FirebaseInstance {
     print("User contact $contactKey stored in db as $randomId");
   }
 
+  /// Store a trip data to Firebase
+  Future<void> storeTripOnFirebase(TripModel trip) async {
+    User? user = FirebaseAuth.instance.currentUser; // User Reference
+
+    // Generate and store new Trip ID
+    String randomId =
+        firestoreDB.collection("users").doc().id; // Generate random ID for trip
+
+    // The next trip number is the total number of trips
+    int tripNum =
+        TripStorage.scheduledTrips.length + TripStorage.pendingTrips.length;
+    String tripKey = "trip" + tripNum.toString();
+
+    // Store trip as a pair to parse database
+    final data = {tripKey: randomId};
+
+    // Store in database
+    await firestoreDB
+        .collection('users') // Document "users"
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    // Generate and store contact with ID
+    await firestoreDB.collection('trips').doc(randomId).set({
+      'tripName': trip.tripName,
+      'transPrefs': trip.selectedTransport,
+      'tripStatus': trip.status,
+      'stop1': trip.stop1,
+      'stop2': trip.stop2,
+      'time': trip.time,
+      'day': trip.day,
+    });
+
+    print("Trip created $tripKey and stored in db as $randomId");
+  }
+
   /// ************** Retrieval Methods **************
   // Fetch All Information About User From Firebase
   // Preferably used upon login
@@ -215,6 +255,7 @@ class FirebaseInstance {
     await fetchTransportationPrefsFromFirebase();
     await fetchAddressesFromFirebase();
     await fetchContactsFromFirebase();
+    await fetchTripsFromFirebase();
   }
 
   Future<void> fetchBasicUserInfoFromFirebase() async {
@@ -388,6 +429,70 @@ class FirebaseInstance {
       }
     } catch (e) {
       print("Error fetching user contact data: $e");
+    }
+  }
+
+  /// Fetch all user trips from Firebase at once
+  Future<void> fetchTripsFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser; // User Reference
+      if (user != null) {
+        DocumentSnapshot userDoc =
+            await FirebaseFirestore.instance // Get the User's data
+                .collection('users')
+                .doc(user.uid)
+                .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          // Check if the user exists
+          final userData = userDoc.data() as Map<String, dynamic>;
+
+          // Iterate through trip IDs and update them sequentially in the trip screen
+          var tripIDs =
+              List<String>.filled(TripStorage.NumberOfAllowedTrips, "Null");
+          for (int i = 0; i < (tripIDs.length + 1); i++) {
+            String tripKey = "trip" + i.toString();
+            String tripID = // Get the tripID for each address
+                userData[tripKey] ?? "Null"; // Default to Null if missing
+
+            if (tripID != "Null") {
+              // Check if the ID is valid
+              // Update Trip
+              DocumentSnapshot tripDoc =
+                  await FirebaseFirestore.instance // Get the trip's data
+                      .collection('trips')
+                      .doc(tripID)
+                      .get();
+
+              if (tripDoc.exists && tripDoc.data() != null) {
+                // Check if the user exists
+                final tripData = tripDoc.data() as Map<String, dynamic>;
+
+                // Assuming TripModel has a constructor that allows direct setting of properties
+                TripModel newTrip = TripModel(
+                    tripName: tripData['tripName'] ?? "Unnamed Trip",
+                    status: tripData['tripStatus'] ?? "Pending",
+                    selectedTransport: tripData['transPrefs'] ?? "Pending",
+                    stop1: tripData['stop1'] ?? "Unknown_Stop",
+                    stop2: tripData['stop2'] ?? "Unknown_Stop");
+
+                // Store trip based on status
+                if (newTrip.status == "Scheduled") {
+                  TripStorage.scheduledTrips.add(newTrip); // Store locally
+                  print(
+                      "Scheduled Trip retrieved ${newTrip.tripName} from Firestore db!");
+                } else {
+                  TripStorage.pendingTrips.add(newTrip); // Store locally
+                  print(
+                      "Pending Trip retrieved ${newTrip.tripName} from Firestore db!");
+                }
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print("Error fetching user address data: $e");
     }
   }
 }

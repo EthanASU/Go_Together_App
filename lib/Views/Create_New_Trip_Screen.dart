@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import '../Models/TripModel.dart';
-import '../Storage/TripStorage.dart';
-import '../Storage/ParticipantStorage.dart';
 
-// Firebase
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../Storage/TripStorage.dart'; // Local Storage
+import '../Storage/ParticipantStorage.dart'; // Local Storage
+import '../Storage/UserStorage.dart'; // Local Storage
+import '../FirebaseInstance.dart'; // Remote Storage
 
 /// A screen that allows users to create a new trip by selecting
 /// transportation mode, naming the trip, setting stops, and adding participants.
@@ -22,23 +21,12 @@ class CreateNewTripScreen extends StatefulWidget {
 }
 
 class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
-  final _firebaseAuth =
-      FirebaseAuth.instance; // Reference to the Firebase Auth Object
-  final _firestoreDB =
-      FirebaseFirestore.instance; // Reference to the Firestore Database
-
   String selectedTransport = 'Drive';
   String tripName = '';
   String tripStatus = '';
   String stop1 = '';
   String stop2 = '';
-  List<String> savedAddresses = [
-    "123 Main St",
-    "456 Elm St",
-    "789 Maple St"
-  ]; // TODO: Replace with firebase
-
-  var numberOfAllowedTrips = 10;
+  List<String> savedAddresses = ["123 Main St", "456 Elm St", "789 Maple St"];
 
   /// Updates the selected transportation mode (Drive, Bike, Walk).
   void selectTransport(String mode) {
@@ -269,7 +257,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
   // I made the function return a bool on whether or not they successfully added an trip to make the implementation easier.
   bool _submitTripRequest() {
     if (TripStorage.scheduledTrips.length + TripStorage.pendingTrips.length >
-        (numberOfAllowedTrips - 1)) {
+        (TripStorage.NumberOfAllowedTrips - 1)) {
       print(
           "Exceeded the number of allowed trips for this account. Trip was not added");
       return false;
@@ -295,6 +283,12 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     print("Stop 1: $stop1");
     print("Stop 2: $stop2");
 
+    TripModel trip = new TripModel(
+        tripName: tripName,
+        stop1: stop1,
+        stop2: stop2,
+        selectedTransport: selectedTransport);
+
     // Save trip to local storage
     widget.onTripCreated(
       TripModel(
@@ -308,7 +302,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
     Navigator.pop(context); // Return to MyTripsHomeScreen
 
     // Send trip request to firebase
-    storeTripOnFirebase();
+    FirebaseInstance.Instance?.storeTripOnFirebase(trip);
     return true;
   }
 
@@ -343,43 +337,6 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
         );
       },
     );
-  }
-
-  // ******************* Firebase Methods ********************************
-  /// Store a trip data to Firebase
-  Future<void> storeTripOnFirebase() async {
-    User? user = FirebaseAuth.instance.currentUser; // User Reference
-
-    // Generate and store new Trip ID
-    String randomId = _firestoreDB
-        .collection("users")
-        .doc()
-        .id; // Generate random ID for trip
-
-    // The next trip number is the total number of trips
-    int tripNum =
-        TripStorage.scheduledTrips.length + TripStorage.pendingTrips.length;
-    String tripKey = "trip" + tripNum.toString();
-
-    // Store trip as a pair to parse database
-    final data = {tripKey: randomId};
-
-    // Store in database
-    await _firestoreDB
-        .collection('users') // Document "users"
-        .doc(user!.uid) // User UID
-        .set(data, SetOptions(merge: true)); // Set data in existing doc
-
-    // Generate and store contact with ID
-    await _firestoreDB.collection('trips').doc(randomId).set({
-      'tripName': tripName,
-      'transPrefs': selectedTransport,
-      'tripStatus': tripStatus,
-      'stop1': stop1,
-      'stop2': stop2
-    });
-
-    print("Trip created $tripKey and stored in db as $randomId");
   }
 
   Widget _buildTransportOption(String label, IconData icon) {
