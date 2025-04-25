@@ -309,6 +309,7 @@ class _CreateNewTripScreenState extends State<CreateNewTripScreen> {
 
     // Send trip request to firebase
     FirebaseInstance.Instance?.storeTripOnFirebase(trip);
+    ParticipantStorage.selectedParticipants.clear(); // Clear participants
     return true;
   }
 

@@ -225,13 +225,13 @@ class FirebaseInstance {
     String tripKey = "trip" + tripNum.toString();
 
     // Store trip as a pair to parse database
-    final data = {tripKey: randomId};
+    final tripData = {tripKey: randomId};
 
     // Store in database
     await firestoreDB
         .collection('users') // Document "users"
         .doc(user!.uid) // User UID
-        .set(data, SetOptions(merge: true)); // Set data in existing doc
+        .set(tripData, SetOptions(merge: true)); // Set data in existing doc
 
     // Generate and store contact with ID
     await firestoreDB.collection('trips').doc(randomId).set({
@@ -244,6 +244,20 @@ class FirebaseInstance {
       'time': trip.time,
       'day': trip.day,
     });
+
+    // Store participants in trip
+    for (int i = 0; i < ParticipantStorage.selectedParticipants.length; i++) {
+      print("Adding participant$i to trip...");
+      String participantKey = "participant" + i.toString();
+      final participantData = {
+        participantKey: ParticipantStorage.selectedParticipants[i]['name']
+      }; // TODO: replace this with the friend's/participant's userID
+      await firestoreDB
+          .collection('trips')
+          .doc(randomId)
+          .set(participantData, SetOptions(merge: true));
+      print("Participant$i added!");
+    }
 
     print("Trip created $tripKey and stored in db as $randomId");
   }

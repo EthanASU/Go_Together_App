@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_together_app/Storage/ParticipantStorage.dart';
 import 'dart:io';
 
 import '../Storage/TripStorage.dart'; // Local Storage
@@ -131,6 +132,7 @@ class ProfileViewModel extends ChangeNotifier {
     await FirebaseInstance.Instance?.Logout(); // Logout of Firebase
     UserStorage.ClearAll(); // Clear all user storage locally
     TripStorage.ClearAll(); // Clear all trip storage locally
+    ParticipantStorage.ClearAll(); // Clear all participant storage locally
     notifyListeners();
   }
 }

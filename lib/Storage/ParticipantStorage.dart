@@ -34,6 +34,6 @@ class ParticipantStorage {
   /// Clear all data off local object
   /// Preferably on logout
   static void ClearAll() {
-    // TODO: Clear participant storage?
+    selectedParticipants.clear();
   }
 }
