@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 
-// Firebase Imports
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../Storage/UserStorage.dart'; // Local Storage
+import '../FirebaseInstance.dart'; // Remote Storage
 
 class ProfileViewModel extends ChangeNotifier {
   //fields for step 1
@@ -19,8 +18,6 @@ class ProfileViewModel extends ChangeNotifier {
   // Profile Information
   String _emailAddress = '';
   String _phoneNumber = '';
-  List<Map<String, dynamic>> _addresses = [];
-  List<Map<String, dynamic>> _emergencyContacts = [];
 
   // Getters for Basic Information
   String get userName => _userName;
@@ -32,20 +29,24 @@ class ProfileViewModel extends ChangeNotifier {
   // Getters for Profile Information
   String get emailAddress => _emailAddress;
   String get phoneNumber => _phoneNumber;
-  List<Map<String, dynamic>> get addresses => _addresses;
-  List<Map<String, dynamic>> get emergencyContacts => _emergencyContacts;
+  List<Map<String, dynamic>> get addresses => UserStorage.Addresses;
+  List<Map<String, dynamic>> get emergencyContacts =>
+      UserStorage.EmergencyContacts;
 
   // Constructor
   ProfileViewModel() {
-    fetchUserName(); // Fetch user data when the ViewModel is created
+    _userName =
+        UserStorage.FirstName; // Fetch user data when the ViewModel is created
+    _emailAddress = UserStorage.Email;
+    _phoneNumber = UserStorage.PhoneNumber;
   }
 
   // Profile Completion Status
   bool get isProfileComplete {
     return _emailAddress.isNotEmpty ||
         _phoneNumber.isNotEmpty ||
-        _addresses.isNotEmpty ||
-        _emergencyContacts.isNotEmpty;
+        UserStorage.Addresses.isNotEmpty ||
+        UserStorage.EmergencyContacts.isNotEmpty;
   }
 
   // Update Methods
@@ -90,12 +91,12 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   void addAddress(Map<String, dynamic> address) {
-    _addresses.add(address);
+    UserStorage.Addresses.add(address);
     notifyListeners();
   }
 
   void addEmergencyContact(Map<String, dynamic> contact) {
-    _emergencyContacts.add(contact);
+    UserStorage.EmergencyContacts.add(contact);
     notifyListeners();
   }
 
@@ -109,41 +110,25 @@ class ProfileViewModel extends ChangeNotifier {
   }
 
   void updateAddresses(List<Map<String, dynamic>> newAddresses) {
-    _addresses = List.from(newAddresses);
+    UserStorage.Addresses = List.from(newAddresses);
     _isProfileComplete = true;
     notifyListeners();
   }
 
   void updateUserInfo({required List<Map<String, dynamic>> addresses}) {
-    _addresses = List.from(addresses);
+    UserStorage.Addresses = List.from(addresses);
     _isProfileComplete = true;
     notifyListeners();
   }
 
   void updateEmergencyContacts(List<Map<String, dynamic>> newContacts) {
-    _emergencyContacts = List.from(newContacts);
+    UserStorage.EmergencyContacts = List.from(newContacts);
     notifyListeners();
   }
 
-  /// -------- Firebase Methods ------
-  Future<void> fetchUserName() async {
-    try {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-
-        if (userDoc.exists && userDoc.data() != null) {
-          final data = userDoc.data() as Map<String, dynamic>;
-          _userName =
-              data['firstName'] ?? "User"; // Default to "User" if missing
-          notifyListeners();
-        }
-      }
-    } catch (e) {
-      print("Error fetching user data: $e");
-    }
+  Future<void> logout() async {
+    await FirebaseInstance.Instance?.Logout(); // Logout of Firebase
+    UserStorage.ClearAll(); // Clear all local storage
+    notifyListeners();
   }
 }

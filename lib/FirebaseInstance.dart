@@ -3,6 +3,8 @@ import '../Storage/UserStorage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+/// All of Firebase's methods and calls centralized in one singleton unit
+/// Call "Instance" from anywhere in the project
 class FirebaseInstance {
   // Singleton Reference
   static FirebaseInstance? Instance;
@@ -46,6 +48,10 @@ class FirebaseInstance {
       print("Login failed: $e");
       return false;
     }
+  }
+
+  Future<void> Logout() async {
+    await FirebaseAuth.instance.signOut(); // Sign Out of Firebase
   }
 
   // TODO: Handle Email and Phone number verification
@@ -202,13 +208,42 @@ class FirebaseInstance {
   }
 
   /// ************** Retrieval Methods **************
-
   // Fetch All Information About User From Firebase
   // Preferably used upon login
   Future<void> fetchAllFromFirebase() async {
+    await fetchBasicUserInfoFromFirebase();
     await fetchTransportationPrefsFromFirebase();
     await fetchAddressesFromFirebase();
     await fetchContactsFromFirebase();
+  }
+
+  Future<void> fetchBasicUserInfoFromFirebase() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          final data = userDoc.data() as Map<String, dynamic>;
+          UserStorage.FirstName =
+              data['firstName'] ?? ""; // Default to "User" if missing
+          UserStorage.LastName =
+              data['lastName'] ?? ""; // Default to "User" if missing
+          UserStorage.StudentNumber = int.parse(data['studentID']) ?? 0;
+          UserStorage.School =
+              data['school'] ?? "Missing"; // Default to "User" if missing
+          UserStorage.Email =
+              data['email'] ?? ""; // Default to "User" if missing
+          UserStorage.PhoneNumber =
+              data['phoneNumber'] ?? ""; // Default to "User" if missing
+        }
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
   }
 
   /// Fetch transportation prefs from Firebase
@@ -228,19 +263,12 @@ class FirebaseInstance {
           bool bike = data['Bike'] ?? false; // Default to false if missing
           UserStorage.BikePref = bike;
 
-          //setTransportationMode('Bike', bike);
-
           bool carpool =
               data['Carpool'] ?? false; // Default to false if missing
           UserStorage.DrivePref = carpool;
 
-          //setTransportationMode('Carpool', carpool);
-
           bool walk = data['Walk'] ?? false; // Default to false if missing
           UserStorage.WalkPref = walk;
-          //setTransportationMode('Walk', walk);
-
-          //notifyListeners();
         }
       }
     } catch (e) {

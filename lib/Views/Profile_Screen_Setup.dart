@@ -7,9 +7,6 @@ import '../Views/LoginView.dart';
 import '../Views/My_Trips_Home_Screen.dart';
 import 'calendar_screen.dart';
 //import 'package:google_fonts/google_fonts.dart';
-// Firebase Imports
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../Views/create_new_trip_screen.dart';
 import '../Views/My_Trips_Home_Screen.dart';
 import '../Views/HomeScreen.dart';
@@ -93,7 +90,6 @@ class ProfileScreenContent extends StatelessWidget {
                                 ProfilePersonalSetUpViewModel();
                             // Initialize with existing data
                             setupViewModel.initializeFromMainProfile(viewModel);
-
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -245,8 +241,7 @@ class ProfileScreenContent extends StatelessWidget {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-                    await FirebaseAuth.instance
-                        .signOut(); // Sign Out of Firebase
+                    viewModel.logout();
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -461,6 +456,19 @@ class ProfileScreenContent extends StatelessWidget {
                       ],
                     ],
                   ),
+                ),
+                // Logout Button
+                ElevatedButton(
+                  onPressed: () async {
+                    viewModel.logout();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              MyHomePage()), // Navigate back to login screen
+                    );
+                  },
+                  child: Text("Logout"),
                 ),
               ],
 

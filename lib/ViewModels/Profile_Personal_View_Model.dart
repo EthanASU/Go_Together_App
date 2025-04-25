@@ -25,6 +25,15 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
   bool is_Saved = false;
   bool get isSaved => is_Saved;
 
+  // Initialize User Transportation Prefs in Constructor
+  ProfilePersonalSetUpViewModel() {
+    setTransportationMode('Bike', UserStorage.BikePref);
+    setTransportationMode('Carpool', UserStorage.DrivePref);
+    setTransportationMode('Walk', UserStorage.WalkPref);
+    email_Address = UserStorage.Email;
+    phone_Number = UserStorage.PhoneNumber;
+  }
+
   //*Methods*//
   //update email
   void updateEmail(String email) {
@@ -617,7 +626,6 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     updateEmail(mainViewModel.emailAddress);
     updatePhone(mainViewModel.phoneNumber);
     UserStorage.Addresses = List.from(mainViewModel.addresses);
-
     UserStorage.EmergencyContacts = List.from(mainViewModel.emergencyContacts);
 
     notifyListeners();
