@@ -200,6 +200,7 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
     );
   }
 
+  /// ******* Raymond's Top Navigation Bar
   Widget _buildTabs() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -231,6 +232,8 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
       ],
     );
   }
+
+  /// *****************************
 
   void _handleNavTap(BuildContext context, int index) {
     switch (index) {
