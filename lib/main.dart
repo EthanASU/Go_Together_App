@@ -1,13 +1,17 @@
+//import packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart'; // Make sure this import works
-import 'ViewModels/LoginViewModel.dart';
-import 'ViewModels/Profile_Screen_View_Model.dart';
+//Views
 import 'Views/LoginView.dart'; // Adjust the path for your login page
 import 'Views/Splash_Screen.dart';
-import 'Views/profile_screen_setup.dart';
+import 'Views/Profile_Screen_Setup.dart';
 import 'Views/Profile_Personal_SetUp.dart';
-import 'Widgets/My_Trips_Top_Navigation_Bar.dart';
+//ViewModels
+import 'ViewModels/LoginViewModel.dart';
+import 'ViewModels/Profile_Screen_View_Model.dart';
 import '../ViewModels/Profile_Personal_View_Model.dart';
+//Widgets
+import 'Widgets/My_Trips_Top_Navigation_Bar.dart';
 // Firebase Imports
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,6 +37,7 @@ Future<void> main() async {
         home: MyHomePage(),
         routes: {
           '/profile': (context) => ProfileSetUp(),
+          
         },
       ),
     ),
@@ -73,5 +78,9 @@ class _SplashScreenWithDelayState extends State<SplashScreenWithDelay> {
     return SplashScreen();
   }
 }
+
+
+
+
 
 
