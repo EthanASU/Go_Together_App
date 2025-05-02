@@ -1,17 +1,27 @@
 //import packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+//ViewModel
 import '../ViewModels/Profile_Screen_View_Model.dart';
+//import Firebase packages
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-
-//View Model for the three tabs in the profile setup section (Personal/Address/Contact)
+//Manages the state and operations for personal profile setup
+//This ViewModel handles user interactions across three main tabs:
+// 1. Personal
+// 2. Address
+// 3. Emergency Contact
 class ProfilePersonalSetUpViewModel extends ChangeNotifier {
+
+  // Firestore Reference
+  final firestoreDB = FirebaseFirestore.instance; // Reference to the Firestore Database
 
   // Tab navigation selection
   int tab_Index = 0;
   int get TabIndex => tab_Index;
 
-  //--------------- Personal Tab ---------------//
+  //--------------- Personal Tab Section---------------//
   String email_Address = '';
   String phone_Number = '';
   Set<String> transportation_Modes = {};
@@ -23,16 +33,69 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
   bool is_Saved = false;
   bool get isSaved => is_Saved;
 
-  //*Methods*//
+  //*Helper Methods for profile page*//
   //update email
   void updateEmail(String email) {
     email_Address = email;
     notifyListeners();
   }
+
+  // TextField controller for phone number
+  final TextEditingController phoneController1 = TextEditingController();
   //update phone number
   void updatePhone(String phone) {
-    phone_Number = phone;
+    // Remove all non-digit characters
+    String digitsOnly = phone.replaceAll(RegExp(r'\D'), '');
+
+    // Limit to 10 digits
+    if (digitsOnly.length > 10) {
+      digitsOnly = digitsOnly.substring(0, 10);
+    }
+
+    // Format the phone number with dashes
+    String formattedPhone = _formatPhoneNumber(digitsOnly);
+
+    // Update the controller's text to maintain formatting
+    phoneController.value = TextEditingValue(
+        text: formattedPhone,
+        selection: TextSelection.collapsed(offset: formattedPhone.length)
+    );
+
+    // Update the stored phone number
+    phone_Number = formattedPhone;
+
     notifyListeners();
+  }
+
+  // Format phone number with standard phone number formatting
+  //
+  // Converts raw digits to (XXX) XXX-XXXX format
+  // [digits] Raw phone number digits
+  // Returns formatted phone number string
+  String _formatPhoneNumber(String digits) {
+    if (digits.isEmpty) return '';
+
+    // Less than 3 digits, return as is
+    if (digits.length < 4) return digits;
+
+    // 4-6 digits, add first dash
+    if (digits.length < 7) {
+      return '${digits.substring(0, 3)}-${digits.substring(3)}';
+    }
+
+    // 7-10 digits, add both dashes
+    return '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
+  }
+
+  // Validate phone number
+  //
+  // Returns true if the phone number is exactly 10 digits
+  bool isValidPhoneNumber(String phone) {
+    // Remove any non-digit characters
+    String digitsOnly = phone.replaceAll(RegExp(r'\D'), '');
+
+    // Check if exactly 10 digits
+    return digitsOnly.length == 10;
   }
   //selecting the transportation method
   void toggleTransportationMode(String mode) {
@@ -57,7 +120,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     tab_Index = index;
     notifyListeners();
   }
-  //Car information section//
+  //-----------------Car information Section---------------------//
   String? car_Year;
   String? car_Make;
   String? car_Model;
@@ -174,7 +237,7 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  //--------------- Address Tab ---------------//
+  //--------------- Address Tab Section---------------//
   //List<Map<String, dynamic>> addresses = [];
   bool _showAddressForm = false;
 
@@ -477,12 +540,11 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-//-----updating information from the forms onto the main profile page-----//
+//-----Updating Information to Main Profile Page-----//
 // Storage for addresses
   List<Map<String, dynamic>> _addresses = [];
 
   List<Map<String, dynamic>> get addresses => _addresses;
-
 
 
 // Update addresses
@@ -565,8 +627,58 @@ class ProfilePersonalSetUpViewModel extends ChangeNotifier {
     return false;
   }
 
-}
+  //--------------- Fire Store Methods ---------------//
 
+  /// Update Phone Number in database
+  Future<void> updatePhoneNumberOnFirebase(String phoneNum) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // Store email as a pair to parse database
+    final data = {"phoneNumber": phoneNum};
+
+    // Store in database
+    await firestoreDB
+        .collection('users') // Document "transPrefs
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    print("User phone number stored in db as $phoneNum");
+  }
+
+  /// Update Email in database
+  Future<void> updateEmailOnFirebase(String email) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // Store email as a pair to parse database
+    final data = {"email": email};
+
+    // Store in database
+    await firestoreDB
+        .collection('users') // Document "transPrefs
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    print("User email number stored in db as $email");
+  }
+
+  /// Update transportation prefs in database
+  Future<void> updateTransportationInfoOnFirebase(
+      String type, bool setting) async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // Store pref as a pair to parse database
+    final data = {type: setting};
+
+    // Store in database
+    await firestoreDB
+        .collection('transPrefs') // Document "transPrefs
+        .doc(user!.uid) // User UID
+        .set(data, SetOptions(merge: true)); // Set data in existing doc
+
+    print("User transportation prefs $type stored in db as $setting");
+  }
+
+}
 class CarEntry {
   final String year;
   final String make;
@@ -581,3 +693,4 @@ class CarEntry {
   });
 
 }
+
