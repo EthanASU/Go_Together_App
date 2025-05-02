@@ -1,12 +1,25 @@
+//import packages
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+//ViewModel
 import '../ViewModels/Profile_Personal_View_Model.dart';
-import 'profile_screen_setup.dart';
 
+/// A stateless widget for capturing emergency contact information
+///
+/// This screen provides a comprehensive form for users to input:
+/// - Relationship to emergency contact
+/// - First name
+/// - Last name
+/// - Phone number
+/// User is recommended to add two emergency contacts
 class ContactFormScreen extends StatelessWidget{
+  // ViewModel responsible for managing emergency contact form state and logic
   final ProfilePersonalSetUpViewModel viewModel;
 
+  // Constructor for ContactFormScreen
+  //
+  // [key] Optional widget key
+  // [viewModel] Required ViewModel to handle emergency contact form interactions
   const ContactFormScreen({
     Key? key,
     required this.viewModel,
@@ -33,6 +46,7 @@ class ContactFormScreen extends StatelessWidget{
                   const SizedBox(height: 20),
 
                   // Relationship Dropdown
+                  /// Dropdown to select relationship with emergency contact
                   Row(
                     children: const [
                       Text(
@@ -74,6 +88,7 @@ class ContactFormScreen extends StatelessWidget{
                   const SizedBox(height: 16),
 
                   // Name Fields
+                  /// Row containing first and last name input fields
                   Row(
                     children: [
                       Expanded(
@@ -157,7 +172,8 @@ class ContactFormScreen extends StatelessWidget{
                   ),
                   const SizedBox(height: 16),
 
-                  // Phone Number
+                  // Phone Number Input
+                  /// Phone number input with automatic formatting
                   Row(
                     children: const [
                       Text(
@@ -206,7 +222,10 @@ class ContactFormScreen extends StatelessWidget{
                     ),
                   ),
                   const SizedBox(height: 30),
-                  //Add Button
+
+                  // Add Button
+                  /// Button to save emergency contact
+                  /// Enabled only when all required fields are valid
                   Center(
                     child: ElevatedButton(
                       onPressed: viewModel.isContactFormValid
@@ -239,5 +258,4 @@ class ContactFormScreen extends StatelessWidget{
             ],
     );
   }
-
 }
