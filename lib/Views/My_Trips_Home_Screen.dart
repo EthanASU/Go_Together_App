@@ -1,9 +1,13 @@
+//import package
 import 'package:flutter/material.dart';
 import 'package:go_together_app/Storage/TripStorage.dart';
+//Model
+import '../Models/TripModel.dart';
+//Views
 import '../Views/Profile_Screen_Setup.dart';
 import '../Views/Create_New_Trip_Screen.dart';
 import '../Views/Calendar_Screen.dart';
-import '../Models/TripModel.dart';
+//Widgets
 import '../Widgets/TripCard.dart';
 import '../Widgets/My_Trips_Top_Navigation_Bar.dart';
 
@@ -38,7 +42,6 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
               },
             ),
             const SizedBox(height: 12),
-                    _buildTabs(),
 
                     // Trip Lists
                     Expanded(
@@ -175,26 +178,7 @@ class _MyTripsHomeScreenState extends State<MyTripsHomeScreen> {
       ),
     );
   }
-
-  Widget _buildTabs() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: const [
-        Text(
-          "MATCH ME",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        Text(
-          "MY TRIPS",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
-        ),
-        Text(
-          "FIND FRIENDS",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-      ],
-    );
-  }
+  
 
   void _handleNavTap(BuildContext context, int index) {
     switch (index) {
