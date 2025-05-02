@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-
+// // Firebase Imports
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 class ProfileViewModel extends ChangeNotifier{
 
-
-  String _userName = 'Raymond'; //place holder for user's name
+  String user_name  = 'John'; // Placeholder
   List<String> _yourFriends = [];
   int _completedRides = 0;
   bool _isProfileComplete = false;
@@ -19,7 +20,7 @@ class ProfileViewModel extends ChangeNotifier{
   List<Map<String, dynamic>> _emergencyContacts = [];
 
   // Getters for Basic Information
-  String get userName => _userName;
+  String get userName => user_name ;
   List<String> get yourFriends => _yourFriends;
   int get completedRides => _completedRides;
   String get profileImagePath => _profileImagePath;
@@ -39,14 +40,8 @@ class ProfileViewModel extends ChangeNotifier{
         _emergencyContacts.isNotEmpty;
   }
 
-  // Update Methods
-  Future<void> updateProfileImage(String imagePath) async {
-    _profileImagePath = imagePath;
-    notifyListeners();
-  }
-
   void updateUserName(String name) {
-    _userName = name;
+    user_name  = name;
     notifyListeners();
   }
 
@@ -118,5 +113,32 @@ class ProfileViewModel extends ChangeNotifier{
   void updateEmergencyContacts(List<Map<String, dynamic>> newContacts) {
     _emergencyContacts = List.from(newContacts);
     notifyListeners();
+  }
+
+  /// -------- Firebase Methods ------
+  Future<void> updateProfileImage(String imagePath) async {
+    _profileImagePath = imagePath;
+    notifyListeners();
+  }
+
+  Future<void> fetchUserName() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists && userDoc.data() != null) {
+          final data = userDoc.data() as Map<String, dynamic>;
+          user_name  =
+              data['firstName'] ?? "User"; // Default to "User" if missing
+          notifyListeners();
+        }
+      }
+    } catch (e) {
+      print("Error fetching user data: $e");
+    }
   }
 }
