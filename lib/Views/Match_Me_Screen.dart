@@ -1,13 +1,16 @@
-
+//import packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'Calendar_Screen.dart';
-import 'profile_screen_setup.dart';
-import '../Views/Create_New_Trip_Screen.dart';
+//Views
+import '../Views/Calendar_Screen.dart';
+import '../Views/Profile_Screen_Setup.dart';
 import '../Views/My_Trips_Home_Screen.dart';
-import '../Widgets/My_Trips_Top_Navigation_Bar.dart';
+//ViewModel
 import '../ViewModels/Profile_Personal_View_Model.dart';
+//Widget
+import '../Widgets/My_Trips_Top_Navigation_Bar.dart';
 
+// Class to represent a Trip entity with all necessary information
 class Trip {
   final String pickupTime;
   final String pickupLocation;
@@ -27,23 +30,27 @@ class Trip {
   });
 }
 
+// Singleton class to manage date selection across different screens
 class DateSelectionManager {
   static final DateSelectionManager _instance = DateSelectionManager._internal();
 
   factory DateSelectionManager() {
     return _instance;
   }
-
+  // Private constructor for singleton pattern
   DateSelectionManager._internal();
-
+  // State for selected dates
   List<DateTime> _selectedDates = [];
 
+  // Getter for selected dates
   List<DateTime> get selectedDates => _selectedDates;
 
+  // Method to update selected dates
   void updateDates(List<DateTime> dates) {
     _selectedDates = dates;
   }
 }
+// Main StatefulWidget for the MatchMe screen
 class MatchMeScreen extends StatefulWidget {
   final List<DateTime>? initialSelectedDates;
   const MatchMeScreen({
@@ -97,7 +104,7 @@ class _MatchMeScreenState extends State<MatchMeScreen> {
     DateTime firstDate = dates.first;
     DateTime lastDate = dates.last;
 
-    // Format the dates
+    // Format the dates with proper ordinal suffixes (1ST, 2ND, 3RD, 4TH, etc.)
     String formatDay(DateTime date) {
       String day = date.day.toString();
       String suffix;
