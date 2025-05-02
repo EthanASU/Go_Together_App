@@ -1,17 +1,31 @@
 //import packages
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+//ViewModel
 import '../ViewModels/Profile_Personal_View_Model.dart';
-import 'profile_screen_setup.dart';
 
+/// A stateless widget for capturing and managing address information
+///
+/// This screen provides a comprehensive form for users to input:
+/// - Street Address
+/// - Optional Apartment/Suite
+/// - City
+/// - State (dropdown)
+/// - Zip Code
+/// - Optional Address Name
+/// - Default Address option
 class AddressFormScreen extends StatelessWidget{
-
+  // ViewModel responsible for managing address form state and logic
   final ProfilePersonalSetUpViewModel viewModel;
 
+  // Constructor for AddressFormScreen
+  //
+  // [key] Optional widget key
+  // [viewModel] Required ViewModel to handle address form interactions
   const AddressFormScreen({
     Key? key,
     required this.viewModel,
   }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
 
@@ -33,7 +47,8 @@ class AddressFormScreen extends StatelessWidget{
                   ),
                   const SizedBox(height: 20),
 
-                  // Street Address
+                  // Street Address Input
+                  /// TextField for capturing the primary street address
                   TextField(
                     onChanged: viewModel.updateStreetAddress,
                     decoration: InputDecoration(
@@ -45,7 +60,8 @@ class AddressFormScreen extends StatelessWidget{
                   ),
                   const SizedBox(height: 16),
 
-                  // Apt, Suite (Optional)
+                  // Optional Apartment/Suite Input
+                  /// TextField for optional apartment or suite information
                   TextField(
                     onChanged: viewModel.updateAptSuite,
                     decoration: InputDecoration(
@@ -57,7 +73,8 @@ class AddressFormScreen extends StatelessWidget{
                   ),
                   const SizedBox(height: 16),
 
-                  // City, State, Zip Row
+                  // City, State, Zip Code Row
+                  /// A row containing city, state dropdown, and zip code inputs
                   Row(
                     children: [
                       // City
@@ -74,7 +91,7 @@ class AddressFormScreen extends StatelessWidget{
                       ),
                       const SizedBox(width: 8),
 
-                      // State
+                      // State Dropdown
                       SizedBox(
                         width: 100,
                         child: DropdownButtonFormField<String>(
@@ -96,7 +113,7 @@ class AddressFormScreen extends StatelessWidget{
                       ),
                       const SizedBox(width: 8),
 
-                      // Zip Code
+                      // Zip Code Input
                       SizedBox(
                         width: 100,
                         child: TextField(
@@ -114,7 +131,8 @@ class AddressFormScreen extends StatelessWidget{
                   ),
                   const SizedBox(height: 16),
 
-                  // Name this address (Optional)
+                  // Optional Address Name Input
+                  /// TextField for giving a custom name to the address
                   TextField(
                     onChanged: viewModel.updateAddressName,
                     decoration: InputDecoration(
@@ -127,6 +145,7 @@ class AddressFormScreen extends StatelessWidget{
                   const SizedBox(height: 16),
 
                   // Default Address Checkbox
+                  /// Checkbox to set the address as the default address
                   Row(
                     children: [
                       Checkbox(
@@ -144,7 +163,12 @@ class AddressFormScreen extends StatelessWidget{
                   ),
                   const SizedBox(height: 30),
 
-                  // Add Button
+
+                  // Add/Update Button
+                  /// Button to save or update the address
+                  ///
+                  /// Enabled only when all required fields are valid
+                  /// Changes text between 'Add' and 'Update' based on context
                   Center(
                     child: ElevatedButton(
                       onPressed: viewModel.isAddressFormValid
@@ -187,5 +211,4 @@ class AddressFormScreen extends StatelessWidget{
             ],
     );
   }
-
 }
