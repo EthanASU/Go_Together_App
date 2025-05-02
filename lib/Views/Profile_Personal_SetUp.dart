@@ -1,13 +1,14 @@
 //import packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
+//ViewModels
 import '../ViewModels/Profile_Personal_View_Model.dart';
+import '../ViewModels/Profile_Screen_View_Model.dart';
+//Views
 import '../Views/Profile_AddressForm.dart';
 import '../Views/Profile_Contact_Form.dart';
-import '../Views/profile_screen_setup.dart';
-import '../Widgets/address_card.dart';
-import 'package:flutter/services.dart';
-import '../ViewModels/Profile_Screen_View_Model.dart';
+import '../Views/Profile_Screen_Setup.dart';
 
 //View for the three tabs in the profile page section (personal, address, contact)
 class ProfileCompletionScreen extends StatelessWidget {
@@ -129,19 +130,26 @@ class ProfileCompletionScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    TextField(
-                      onChanged: viewModel.updatePhone,
-                      keyboardType: TextInputType.phone,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+
+                      TextField(
+                        controller: viewModel.phoneController,
+                          onChanged: viewModel.updatePhone,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(10),
+                          ],
+                        keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(0),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+
+                          ),
                       ),
-                    ),
 
                     const SizedBox(height: 30),
 
@@ -190,7 +198,6 @@ class ProfileCompletionScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                      //----------------------Idea 2 -----------------------//
                       if (viewModel.transportationModes.contains('Carpool')) ...[
                         const SizedBox(height: 30),
                         Row(
@@ -702,7 +709,8 @@ class ProfileCompletionScreen extends StatelessWidget {
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      // Handle edit
+                                      // TODO: Handle edit button
+
                                     },
                                     child: const Text(
                                       'Edit',
@@ -825,47 +833,6 @@ class ProfileCompletionScreen extends StatelessWidget {
                 ),
               ),
             ),
-            //------------------ End of Emergency Tab Section ---------------//
-
-            // // Bottom Navigation Bar
-            // BottomNavigationBar(
-            //   currentIndex: 4,
-            //   type: BottomNavigationBarType.fixed,
-            //   items: [
-            //     BottomNavigationBarItem(
-            //       icon: Image.asset(
-            //         'Assets/Tab_Bar_Home_Icon.png',
-            //         height: 24,
-            //       ),
-            //       label: 'Home',
-            //     ),
-            //     BottomNavigationBarItem(
-            //       icon: Image.asset(
-            //         'Assets/Tab_Bar_Calendar_Icon.png',
-            //         height: 24,
-            //       ),
-            //       label: 'Calendar',
-            //     ),
-            //     BottomNavigationBarItem(
-            //       icon: Image.asset(
-            //         'Assets/Tab_Bar_Add_Icon.png',
-            //         height: 24,
-            //       ),
-            //       label: 'My Trip',
-            //     ),
-            //     BottomNavigationBarItem(
-            //       icon: Image.asset(
-            //         'Assets/Tab_Bar_Chat_Icon.png',
-            //         height: 24,
-            //       ),
-            //       label: 'Chat',
-            //     ),
-            //     BottomNavigationBarItem(
-            //       icon: Icon(Icons.person),
-            //       label: 'Profile',
-            //     ),
-            //   ],
-            // ),
           ],
         ),
       ),
